@@ -23,7 +23,7 @@ Third party service providers should also work out of the box.
 
 Run this command from the directory in which you want to install your new Slim Framework application.
 
-    php composer.phar create-project jupitern/slim3-skeleton [my-app-name]
+    php composer.phar create-project jupitern/slim3-skeleton [my-app-name] --stability=dev
 
 Replace `[my-app-name]` with the desired directory name for your new application. You'll want to:
 
