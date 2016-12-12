@@ -55,9 +55,15 @@ and inject dependencies matching param names to container object indexes or a ro
 The routes bellow are a example for generic routing to all class:method in
 You can always define your routes one by one and use (or not) $app->resolveRoute method to inject your dependencies.
 Automatic injection will work for class constructor also. BaseController.php
-Example defining two routes for a website and backend folders:
+Example defining two routes for a website and app (backend) folders:
 
 ```php
+
+// resolves to a class:method under the namespace \\App\\Http\\Site and
+// Other parameters in the method will be searched in the container using parameter name
+$app->any('/{class}/{method}', function ($request, $response, $args) use($app) {
+	$app->resolveRoute($args, "\\App\\Http\\Site");
+});
 
 // resolves to a class:method under the namespace \\App\\Http\\App and
 // injects the :id param value into the methos $id parameter
@@ -66,12 +72,6 @@ $app->any('/app/{class}/{method}[/{id:[0-9]+}]', function ($request, $response, 
 	$app->resolveRoute($args, "\\App\\Http\\App");
 });
 
-// resolves to a class:method under the namespace \\App\\Http\\Site and
-// injects the :id param value into the methos $id parameter
-// Other parameters in the method will be searched in the container using parameter name
-$app->any('/{class}/{method}[/{id:[0-9]+}]', function ($request, $response, $args) use($app) {
-	$app->resolveRoute($args, "\\App\\Http\\Site");
-});
 ```
 
 ### Console usage
