@@ -3,7 +3,6 @@
 
 class User extends Model {
 
-	protected $table = 'Users';
-	protected $primaryKey = 'UserID';
+	protected $table = 'users';
 
 }

@@ -21,7 +21,7 @@ final class NotFound extends \Slim\Handlers\NotFound
 
 		// Log the message
 		if ($this->logger) {
-			$this->logger->error("URI '".$request->getUri()->getPath()."' not found. IP: ".$this->getClientIP());
+			$this->logger->error("URI '".$request->getUri()->getPath()."' not found");
 		}
 
 		if ($app->console) {
@@ -33,26 +33,6 @@ final class NotFound extends \Slim\Handlers\NotFound
 			->withStatus(404)
 			->withHeader('Content-Type', 'text/html')
 			->write($app->resolve('view')->render('error::404'));
-	}
-
-	// Function to get the client IP address
-	private function getClientIP() {
-		$ipAddress = '';
-		if (getenv('HTTP_CLIENT_IP'))
-			$ipAddress = getenv('HTTP_CLIENT_IP');
-		else if(getenv('HTTP_X_FORWARDED_FOR'))
-			$ipAddress = getenv('HTTP_X_FORWARDED_FOR');
-		else if(getenv('HTTP_X_FORWARDED'))
-			$ipAddress = getenv('HTTP_X_FORWARDED');
-		else if(getenv('HTTP_FORWARDED_FOR'))
-			$ipAddress = getenv('HTTP_FORWARDED_FOR');
-		else if(getenv('HTTP_FORWARDED'))
-			$ipAddress = getenv('HTTP_FORWARDED');
-		else if(getenv('REMOTE_ADDR'))
-			$ipAddress = getenv('REMOTE_ADDR');
-		else
-			$ipAddress = 'UNKNOWN';
-		return $ipAddress;
 	}
 
 }

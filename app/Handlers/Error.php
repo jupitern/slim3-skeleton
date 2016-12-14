@@ -35,7 +35,7 @@ final class Error extends \Slim\Handlers\Error
 			return $response
 				->withStatus(500)
 				->withHeader('Content-Type', 'text/html')
-				->write($app->resolve('view')->render('error::500'));
+				->write($app->resolve('view')->render('error::500', ['message' => $exception->getMessage()]));
 		}
 
 		if (isset($app->getContainer()['whoops'])) {

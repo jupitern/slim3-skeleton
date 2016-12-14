@@ -35,7 +35,7 @@ final class PhpError extends \Slim\Handlers\PhpError
 			return $response
 				->withStatus(500)
 				->withHeader('Content-Type', 'text/html')
-				->write($app->resolve('view')->render('error::500'));
+				->write($app->resolve('view')->render('error::500', ['message' => $error->getMessage()]));
 		}
 
 		return parent::__invoke($request, $response, $error);
