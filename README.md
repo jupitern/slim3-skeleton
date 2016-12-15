@@ -13,17 +13,13 @@ Available service providers:
 * Flysystem
 * PHPMailer
 
-Available Middleware:
-
-* Session
-
 Third party service providers should also work out of the box.
 
 ### Install the Application
 
 Run this command from the directory in which you want to install your new Slim Framework application.
 
-    php composer.phar create-project jupitern/slim3-skeleton [my-app-name] --stability=dev
+    php composer.phar create-project jupitern/slim3-skeleton [my-app-name]
 
 Replace `[my-app-name]` with the desired directory name for your new application. You'll want to:
 
@@ -50,20 +46,14 @@ Replace `[my-app-name]` with the desired directory name for your new application
 
 ### Routing
 
-This app comes with generic routes defines that will try to automatically match a uri with a class:method
+The app comes with generic routes defines that will try to automatically match a uri with a class:method
 and inject dependencies matching param names to container object indexes or a route argument.
 The routes bellow are a example for generic routing to all class:method in
 You can always define your routes one by one and use (or not) $app->resolveRoute method to inject your dependencies.
-Automatic injection will work for class constructor also. BaseController.php
-Example defining two routes for a website and app (backend) folders:
+
+Example defining two routes for a website and backend folders:
 
 ```php
-
-// resolves to a class:method under the namespace \\App\\Http\\Site and
-// Other parameters in the method will be searched in the container using parameter name
-$app->any('/{class}/{method}', function ($request, $response, $args) use($app) {
-	$app->resolveRoute($args, "\\App\\Http\\Site");
-});
 
 // resolves to a class:method under the namespace \\App\\Http\\App and
 // injects the :id param value into the methos $id parameter
@@ -72,26 +62,52 @@ $app->any('/app/{class}/{method}[/{id:[0-9]+}]', function ($request, $response, 
 	$app->resolveRoute($args, "\\App\\Http\\App");
 });
 
+// resolves to a class:method under the namespace \\App\\Http\\Site and
+// injects the :id param value into the methos $id parameter
+// Other parameters in the method will be searched in the container using parameter name
+$app->any('/{class}/{method}[/{id:[0-9]+}]', function ($request, $response, $args) use($app) {
+	$app->resolveRoute($args, "\\App\\Http\\Site");
+});
 ```
 
 ### Console usage
 
-Just create your console classes under directory app\Console with namespace App\Console and execute in cli doing the following:
+* Usage: php cli.php <command-name> <method-name> [parameters...]
+* Help: php cli.php help
 
-* usage: php cli.php <command-name> <method-name> [parameters...]
-* help: php cli.php help
+How to create a command:
+1. Create a console class under directory app\Console in namespace App\Console
+2. Your class should extend \App\Console\Command
+3. create a public method with some params.
 
-Console routes are located in file app/config/routes_cli.php.
-This file contains a help route to list available routes a a route to resolve console commands to your classes
-under the namespace App\Console
+Example:
+
+Command class:
+```php
+namespace App\Console;
+
+class Test extends Command
+{
+
+	public function method($a, $b='foobar')
+	{
+		$this->response->write(
+			"\nEntered console command with params: \n".
+			"a= {$a}\n".
+			"b= {$b}\n"
+		);
+	}
+}
+```
+
+Execute the class:method from cli:
+
+* php cli.php test method a=foo b=bar
+
+  OR just passing parameter "a" since "b" is optional
+* php cli.php test method a=foo
 
 ### Code examples
-
-Log some message
-```php
-// As BaseController constructor is requesting $logger and exists in the container we can simple do:
-$this->logger->info("logging a message");
-```
 
 Read a user from db
 ```php
