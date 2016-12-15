@@ -3,7 +3,7 @@
 namespace App\Http;
 
 
-class Controller
+Abstract class Controller
 {
 	public $request;
 	public $response;

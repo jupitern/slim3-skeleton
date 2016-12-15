@@ -3,7 +3,7 @@
 namespace App\Console;
 
 
-class Command
+Abstract class Command
 {
 	public $request;
 	public $response;

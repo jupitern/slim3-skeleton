@@ -14,10 +14,10 @@ $app->get('/{command}/{method}', function ($request, $response, $args) use ($app
 
 	$response->withHeader('Content-Type', 'text/plain');
 	$app->resolveRoute([
-			'class' => $parts[0][0],
-			'method' => $parts[0][1],
-			'params' => $params
-		],
+		'class' => $parts[0][0],
+		'method' => $parts[0][1],
+		'params' => $params
+	],
 		"\\App\\Console"
 	);
 });
@@ -34,22 +34,28 @@ $app->get('/help', function ($request, $response, $args) {
 	foreach ($iterator as $fileinfo) {
 		if ($fileinfo->isFile()) {
 			$className = str_replace(".php", "", $fileinfo->getFilename());
-			$response->write("- ".strtolower($className)."\n");
-
 			$class = new \ReflectionClass("\\App\\Console\\$className");
-			foreach ($class->getMethods() as $method) {
-				$response->write("       ".strtolower($method->getName())." ");
-				foreach ($method->getParameters() as $parameter) {
-					if ($parameter->isDefaultValueAvailable()) {
-						$response->write("[".$parameter->getName()."=value] ");
+
+			if (!$class->isAbstract()) {
+				$response->write("- ".strtolower($className)."\n");
+
+				foreach ($class->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
+					if (strpos($method->getName(), '__') === 0) {
+						break;
 					}
-					else {
-						$response->write($parameter->getName()."=value ");
+					$response->write("       ".strtolower($method->getName())." ");
+					foreach ($method->getParameters() as $parameter) {
+						if ($parameter->isDefaultValueAvailable()) {
+							$response->write("[".$parameter->getName()."=value] ");
+						}
+						else {
+							$response->write($parameter->getName()."=value ");
+						}
 					}
+					$response->write("\n");
 				}
 				$response->write("\n");
 			}
-			$response->write("\n");
 		}
 	}
 
