@@ -75,10 +75,11 @@ $app->any('/{class}/{method}[/{id:[0-9]+}]', function ($request, $response, $arg
 * Usage: php cli.php <command-name> <method-name> [parameters...]
 * Help: php cli.php help
 
-How to create a command:
- 1. Create a console class under directory app\Console in namespace App\Console
+How to create a new command:
+ 1. Create a class under directory app\Console in namespace App\Console
  2. Your class should extend \App\Console\Command
  3. create a public method with some params.
+ 4. DONE!
 
 Example:
 
@@ -100,12 +101,15 @@ class Test extends Command
 }
 ```
 
-Execute the class:method from cli:
+Execute the class:method from command line:
 
-* php cli.php test method a=foo b=bar
+```php
+// since param "b" is optional you can use one of the following commands
 
-  OR just passing parameter "a" since "b" is optional
-* php cli.php test method a=foo
+> php cli.php test method a=foo b=bar
+
+> php cli.php test method a=foo
+```
 
 ### Code examples
 
