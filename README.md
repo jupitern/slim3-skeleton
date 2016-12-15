@@ -72,7 +72,7 @@ $app->any('/{class}/{method}[/{id:[0-9]+}]', function ($request, $response, $arg
 
 ### Console usage
 
-* Usage: php cli.php <command-name> <method-name> [parameters...]
+* Usage: php cli.php [command-name] [method-name] [parameters...]
 * Help: php cli.php help
 
 How to create a new command:
