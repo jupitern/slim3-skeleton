@@ -76,9 +76,9 @@ $app->any('/{class}/{method}[/{id:[0-9]+}]', function ($request, $response, $arg
 * Help: php cli.php help
 
 How to create a command:
-1. Create a console class under directory app\Console in namespace App\Console
-2. Your class should extend \App\Console\Command
-3. create a public method with some params.
+ 1. Create a console class under directory app\Console in namespace App\Console
+ 2. Your class should extend \App\Console\Command
+ 3. create a public method with some params.
 
 Example:
 
