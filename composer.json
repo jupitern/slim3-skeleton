@@ -1,8 +1,8 @@
 {
   "name": "jupitern/slim3-skeleton",
-  "description": "Slim starter / Slim skeleton package to boost your development with Slim",
+  "description": "Slim starter / Slim skeleton package to boost your development with Slim framework",
   "keywords": [
-    "Slim", "slimphp", "Slim-skeleton", "Slim-starter", "skeleton", "starter"
+    "slim", "slim php", "Slim skeleton", "Slim starter", "skeleton", "starter", "php framework", "api"
   ],
   "license": "MIT",
   "require": {
@@ -20,10 +20,5 @@
           "App\\": "app/",
           "Lib\\": "lib/"
       }
-  },
-  "suggest": {
-    "respect/validation": "Validation package",
-    "jupitern/table": "Html table helper",
-    "adamwathan/form": "Html form helper"
   }
 }
