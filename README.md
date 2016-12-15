@@ -29,9 +29,9 @@ Replace `[my-app-name]` with the desired directory name for your new application
 
 ### Run it:
 
-1. `$ cd [my-app-name]`
-2. `$ php -S 0.0.0.0:8888 -t public public/index.php`
-3. Browse to http://localhost:8888
+1. `$ cd [my-app-name]\public`
+2. `$ php -S localhost:8080`
+3. Browse to http://localhost:8080
 
 
 ### Key directories
