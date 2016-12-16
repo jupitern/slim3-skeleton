@@ -1,6 +1,8 @@
 <?php namespace App\ServiceProviders;
 
-use \PHPMailer;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\ResponseInterface;
+use PHPMailer;
 
 class Mailer
 {
@@ -11,7 +13,7 @@ class Mailer
 		$this->container = $container;
 	}
 
-	public function __invoke($request, $response, $next)
+	public function __invoke(ServerRequestInterface $request, ResponseInterface $response, $next)
 	{
 		$this->container['mailer'] = function ($c) {
 			return function($to = [], $cc = [], $bcc = [], $subject, $body, $altBody, $attachments = [], $configName = 'default', $configsOverride = []) {

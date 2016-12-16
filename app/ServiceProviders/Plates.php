@@ -1,7 +1,9 @@
 <?php namespace App\ServiceProviders;
 
-use \League\Plates\Engine;
-use \League\Plates\Extension\URI;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\ResponseInterface;
+use League\Plates\Engine;
+use League\Plates\Extension\URI;
 
 class Plates
 {
@@ -12,7 +14,7 @@ class Plates
 		$this->container = $container;
 	}
 
-	public function __invoke($request, $response, $next)
+	public function __invoke(ServerRequestInterface $request, ResponseInterface $response, $next)
 	{
 		$basePath = $request->getUri()->getBasePath();
 

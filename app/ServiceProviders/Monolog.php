@@ -1,7 +1,9 @@
 <?php namespace App\ServiceProviders;
 
-use \Monolog\Logger;
-use \Monolog\Handler\StreamHandler;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\ResponseInterface;
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
 
 class Monolog
 {
@@ -11,7 +13,7 @@ class Monolog
 		$this->container = $container;
     }
 
-    public function __invoke($request, $response, $next)
+    public function __invoke(ServerRequestInterface $request, ResponseInterface $response, $next)
     {
 		$this->container['logger'] = function($c) {
 			return function($name = null, $logFilePath = null) {

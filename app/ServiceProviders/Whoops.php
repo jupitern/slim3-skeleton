@@ -1,5 +1,7 @@
 <?php namespace App\ServiceProviders;
 
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\ResponseInterface;
 use Whoops\Handler\PrettyPageHandler;
 use Whoops\Handler\JsonResponseHandler;
 
@@ -12,7 +14,7 @@ class Whoops
 		$this->container = $container;
 	}
 
-	public function __invoke($request, $response, $next)
+	public function __invoke(ServerRequestInterface $request, ResponseInterface $response, $next)
 	{
 		$whoops = new \Whoops\Run;
 		$whoops->allowQuit(false);

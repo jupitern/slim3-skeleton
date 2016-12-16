@@ -1,7 +1,9 @@
 <?php namespace App\ServiceProviders;
 
-use \Illuminate\Database\Capsule\Manager as Capsule;
-use \Illuminate\Database;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\ResponseInterface;
+use Illuminate\Database\Capsule\Manager as Capsule;
+use Illuminate\Database;
 
 class Eloquent
 {
@@ -11,7 +13,7 @@ class Eloquent
 		$this->container = $container;
 	}
 
-	public function __invoke($request, $response, $next)
+	public function __invoke(ServerRequestInterface $request, ResponseInterface $response, $next)
 	{
 		$settings = \App\App::instance()->getConfig('settings');
 		$debug = $settings['debug'];
