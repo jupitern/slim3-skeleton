@@ -17,7 +17,7 @@ final class NotFound extends \Slim\Handlers\NotFound
 
 	public function __invoke(Request $request, Response $response)
 	{
-		$app = \App\App::instance();
+		$app = \Lib\App::instance();
 
 		// Log the message
 		if ($this->logger) {

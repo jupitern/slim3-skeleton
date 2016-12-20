@@ -20,7 +20,7 @@ class FileSystem
 		$this->container['filesystem'] = function ($c) {
 			return function($configName = 'local', $configsOverride = []) {
 
-				$defaultConfigs = \App\App::instance()->getConfig("settings.filesystem.{$configName}");
+				$defaultConfigs = \Lib\App::instance()->getConfig("settings.filesystem.{$configName}");
 				$configs = array_merge($defaultConfigs, $configsOverride);
 
 				$filesystem = null;

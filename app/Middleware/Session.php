@@ -6,11 +6,11 @@ use Psr\Http\Message\ResponseInterface;
 class Session
 {
 
-	public function __invoke(ServerRequestInterface $request, ResponseInterface $response, $next, $next)
+	public function __invoke(ServerRequestInterface $request, ResponseInterface $response, $next)
 	{
 		if (session_status() !== PHP_SESSION_ACTIVE) {
 
-			$settings = \App\App::instance()->getConfig('settings.session');
+			$settings = \Lib\App::instance()->getConfig('settings.session');
 
 			$current = session_get_cookie_params();
 			$lifetime = (int)($settings['lifetime'] ?: $current['lifetime']);

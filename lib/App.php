@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace Lib;
 
 use Slim\Exception\NotFoundException;
 
@@ -190,10 +190,10 @@ class App
 	public static function debug($var)
 	{
 		echo '<pre>';
-		if ( is_array( $var ) )  {
-			print_r ( $var );
+		if (is_array($var)) {
+			print_r($var);
 		} else {
-			var_dump ( $var );
+			var_dump ($var);
 		}
 		echo '</pre>';
 	}

@@ -18,14 +18,14 @@ final class PhpError extends \Slim\Handlers\PhpError
 
 	public function __invoke(Request $request, Response $response, \Throwable $error)
 	{
-		$app = \App\App::instance();
+		$app = \Lib\App::instance();
 
 		// Log the message
 		if ($this->logger) {
 			$this->logger->critical($error->getMessage()."\n".$error->getTraceAsString());
 		}
 
-		if (\App\App::instance()->console) {
+		if (\Lib\App::instance()->console) {
 			echo "Error: ".$error->getMessage()."\n\n";
 			echo $error->getTraceAsString();
 			return $response;

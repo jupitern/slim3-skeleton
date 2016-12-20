@@ -32,7 +32,7 @@ if ($console) {
 }
 
 // instance app
-$app = \App\App::instance($settings, $console);
+$app = \Lib\App::instance($settings, $console);
 // Set up dependencies
 $app->registerProviders();
 // Register middleware

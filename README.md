@@ -38,7 +38,7 @@ Replace `[my-app-name]` with the desired directory name for your new application
 
 * `app`:        Application code (models, controllers, cli commands, handlers, middleware, service providers and others)
 * `config`:     Configuration files like db, mail, routes...
-* `lib`:        Agnostic project classes
+* `lib`:        Other project classes
 * `resources`:  Views as well as your raw, un-compiled assets such as LESS, SASS, or JavaScript.
 * `storage`:    Log files, cache files...
 * `public`:     The public directory contains `index.php` file, assets such as images, JavaScript, and CSS

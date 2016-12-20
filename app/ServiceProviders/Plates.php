@@ -23,7 +23,7 @@ class Plates
 				$plates = new Engine($directory, $fileExtension);
 				$plates->loadExtension(new URI($basePath));
 
-				$templatesPath = \App\App::instance()->getConfig('settings.templates');
+				$templatesPath = \Lib\App::instance()->getConfig('settings.templates');
 				foreach ($templatesPath as $name => $path) {
 					$plates->addFolder($name, $path, true);
 				}
