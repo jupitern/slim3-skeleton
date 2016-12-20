@@ -2,7 +2,7 @@
 return [
 	'settings' => [
 		// url config. Url must end with a slash '/'
-		'baseUrl' => 'http://localhost:8888/',
+		'baseUrl' => 'http://localhost:8080/',
 		'indexFile' => true,
 		// display errors details
 		'displayErrorDetails' => true,
