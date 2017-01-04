@@ -1,5 +1,6 @@
-<?php namespace App\ServiceProviders;
+<?php
 
+namespace App\ServiceProviders;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use League\Plates\Engine;
@@ -22,6 +23,9 @@ class Plates
 			return function($directory = null, $fileExtension = 'php') use($basePath) {
 				$plates = new Engine($directory, $fileExtension);
 				$plates->loadExtension(new URI($basePath));
+				$plates->registerFunction('url', function ($url, $includeBaseUrl = true) {
+					return \Lib\App::instance()->url($url, $includeBaseUrl);
+				});
 
 				$templatesPath = \Lib\App::instance()->getConfig('settings.templates');
 				foreach ($templatesPath as $name => $path) {

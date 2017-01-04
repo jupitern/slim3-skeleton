@@ -1,12 +1,7 @@
-<?php namespace Lib;
+<?php
 
-/**
- * Simple Session class that allows retrieval of a session variable with
- * a default
- *
- * Copyright 2015 Rob Allen (rob@akrabat.com).
- * License: New-BSD
- */
+namespace Lib;
+
 final class Session
 {
 

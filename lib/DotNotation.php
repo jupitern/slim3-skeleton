@@ -1,4 +1,7 @@
-<?php namespace Lib;
+<?php
+
+namespace Lib;
+
 /**
  * Dot notation for access multidimensional arrays.
  *

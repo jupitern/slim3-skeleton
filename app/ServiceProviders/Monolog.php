@@ -1,5 +1,6 @@
-<?php namespace App\ServiceProviders;
+<?php
 
+namespace App\ServiceProviders;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Monolog\Logger;
@@ -26,8 +27,10 @@ class Monolog
 					$logFilePath = $app->getConfig("settings.appLogFilePath");
 				}
 				$logger = new \Monolog\Logger($name);
-				$file_handler = new \Monolog\Handler\StreamHandler($logFilePath);
-				$logger->pushHandler($file_handler);
+				$logger->pushHandler(new \Monolog\Handler\StreamHandler($logFilePath, Logger::INFO));
+				if ((bool)$app->getConfig("settings.debug")) {
+					$logger->pushHandler(new \Monolog\Handler\ChromePHPHandler(Logger::DEBUG));
+				}
 				return $logger;
 			};
 		};

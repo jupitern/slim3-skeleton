@@ -1,7 +1,6 @@
 <?php
 
 namespace Lib;
-
 use Slim\Exception\NotFoundException;
 
 class App

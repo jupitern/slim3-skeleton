@@ -1,6 +1,6 @@
 # Slim Framework 3 Skeleton Application (http + cli)
 
-Use this skeleton application to quickly setup and start working on a new Slim Framework 3 application (Developed with slim 3.6).
+Use this skeleton application to quickly setup and start working on a new Slim Framework 3 application (Developed with slim 3.7).
 This application handles http and command line requests.
 The application has service providers available. All are optional and you can disable them in the config/app.php file
 

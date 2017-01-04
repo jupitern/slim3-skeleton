@@ -1,5 +1,6 @@
-<?php namespace App\ServiceProviders;
+<?php
 
+namespace App\ServiceProviders;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use PHPMailer;
