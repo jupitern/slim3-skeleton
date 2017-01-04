@@ -56,14 +56,14 @@ Example defining two routes for a website and backend folders:
 ```php
 
 // resolves to a class:method under the namespace \\App\\Http\\App and
-// injects the :id param value into the methos $id parameter
+// injects the :id param value into the method $id parameter
 // Other parameters in the method will be searched in the container using parameter name
 $app->any('/app/{class}/{method}[/{id:[0-9]+}]', function ($request, $response, $args) use($app) {
 	$app->resolveRoute($args, "\\App\\Http\\App");
 });
 
 // resolves to a class:method under the namespace \\App\\Http\\Site and
-// injects the :id param value into the methos $id parameter
+// injects the :id param value into the method $id parameter
 // Other parameters in the method will be searched in the container using parameter name
 $app->any('/{class}/{method}[/{id:[0-9]+}]', function ($request, $response, $args) use($app) {
 	$app->resolveRoute($args, "\\App\\Http\\Site");
