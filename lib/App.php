@@ -1,13 +1,14 @@
 <?php
 
 namespace Lib;
-use Slim\Exception\NotFoundException;
+use Psr\Http\Message\ResponseInterface;
 
 class App
 {
 
 	public $console = false;
 
+	/** @var \Slim\App */
 	private $slim = null;
 	private $settings = [];
 	private static $instance = null;
@@ -98,7 +99,7 @@ class App
 		$dn = new \Lib\DotNotation($this->settings);
 		$dn->set($param, $value);
 	}
-	
+
 	/**
 	 * get configuration param
 	 *
@@ -168,8 +169,8 @@ class App
 	/**
 	 * generate a url
 	 *
-	 * @param $url
-	 * @param $includeBaseUrl
+	 * @param string $url
+	 * @param boolean $includeBaseUrl
 	 * @return string
 	 */
 	public function url($url = '', $includeBaseUrl = true)
@@ -189,10 +190,10 @@ class App
 	public static function debug($var)
 	{
 		echo '<pre>';
-		if (is_array($var)) {
-			print_r($var);
+		if ( is_array( $var ) )  {
+			print_r ( $var );
 		} else {
-			var_dump ($var);
+			var_dump ( $var );
 		}
 		echo '</pre>';
 	}
@@ -200,42 +201,42 @@ class App
 
 	/**
 	 * resolve and call a given class / method
-	 * $args = ['class' => 'Test', 'method' => 'test']
 	 *
-	 * @param $args
-	 * @param $baseNamespace
+	 * @param string $namespace
+	 * @param string $className
+	 * @param string $methodName
+	 * @param array $params
+	 * @return \Psr\Http\Message\ResponseInterface
 	 */
-	public function resolveRoute($args, $baseNamespace = "\\App\\Http")
+	public function resolveRoute($namespace = "\\App\\Http", $className, $methodName, $params = [])
 	{
-		$classParts = array_slice($args, 0, array_search('method', array_keys($args)));
-		$params = isset($args['params']) ?
-			$args['params'] : array_slice($args, array_search('method', array_keys($args)) + 1, count($args));
+		$response = $this->resolve('response');
+		$className = $namespace.'\\'.$className;
 
-		$className = $baseNamespace;
-		foreach ($classParts as $part) {
-			$className .= "\\" . ucfirst($part);
-		}
-
-		try {
-			if (!isset($args['method']) || !method_exists($className, $args['method'])) {
-				throw new \BadMethodCallException();
-			}
-			else {
-				$class = new \ReflectionClass($className);
-				$constructor = $class->getConstructor();
-				$method = $class->getMethod($args['method']);
-
-				$constructorArgs = $constructor !== null ? $this->resolveDependencies($class, $constructor, $params) : [];
-				$methodArgs = $this->resolveDependencies($class, $method, $params);
-
-				$controllerObj = $class->newInstanceArgs($constructorArgs);
-				$method->invokeArgs($controllerObj, $methodArgs);
-			}
-		}
-		catch (\BadMethodCallException $e) {
+		if (!method_exists($className, $methodName)) {
 			$handler = $this->getContainer()['notFoundHandler'];
-			$handler($this->getContainer()['request'], $this->getContainer()['response']);
+			$response = $handler($this->getContainer()['request'], $this->getContainer()['response']);
 		}
+		else {
+			$class = new \ReflectionClass($className);
+			$constructor = $class->getConstructor();
+			$method = $class->getMethod($methodName);
+
+			$constructorArgs = $constructor !== null ? $this->resolveDependencies($class, $constructor, $params) : [];
+			$methodArgs = $this->resolveDependencies($class, $method, $params);
+
+			$controllerObj = $class->newInstanceArgs($constructorArgs);
+			$ret = $method->invokeArgs($controllerObj, $methodArgs);
+
+			if ($ret instanceof ResponseInterface) {
+				$response = $ret;
+			}
+			if (is_string($ret) || is_numeric($ret)) {
+				$response->write($ret);
+			}
+		}
+
+		return $response;
 	}
 
 
@@ -261,7 +262,7 @@ class App
 				$methodArgs[] = $param->getDefaultValue();
 			}
 			else {
-				throw new \BadMethodCallException();
+				throw new \Exception("Error resolving method dependencies");
 			}
 		}
 		return $methodArgs;

@@ -1,7 +1,10 @@
 <?php
 
+use \Psr\Http\Message\ServerRequestInterface as Request;
+use \Psr\Http\Message\ResponseInterface as Response;
+
 // automatic console command resolver
-$app->get('/{command}/{method}', function ($request, $response, $args) use ($app, $argv) {
+$app->get('/{command}/{method}', function (Request $request, Response $response, $args) use ($app, $argv) {
 	$parts = array_chunk($argv, 2);
 
 	$params = [];
@@ -13,20 +16,15 @@ $app->get('/{command}/{method}', function ($request, $response, $args) use ($app
 	}
 
 	$response->withHeader('Content-Type', 'text/plain');
-	$app->resolveRoute([
-		'class' => $parts[0][0],
-		'method' => $parts[0][1],
-		'params' => $params
-	],
-		"\\App\\Console"
-	);
+
+	return $app->resolveRoute("\\App\\Console", $parts[0][0], $parts[0][1], $params);
 });
 
 // help route to display available command in
-$app->get('/help', function ($request, $response, $args) {
+$app->get('/help', function (Request $request, Response $response, $args) {
 	$response->withHeader('Content-Type', 'text/plain');
 
-	$response->write("\n** SLIM command line **\n\n");
+	$response->write("\n** Slim command line **\n\n");
 	$response->write("usage: php ".ROOT_PATH."cli.php <command-name> <method-name> [parameters...]\n\n");
 	$response->write("The following commands are available:\n");
 
@@ -59,4 +57,5 @@ $app->get('/help', function ($request, $response, $args) {
 		}
 	}
 
+	return $response;
 });

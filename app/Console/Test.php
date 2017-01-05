@@ -9,10 +9,9 @@ class Test extends Command
 	{
 		$this->logger->info("logging a message");
 
-		$this->response->write(
+		return
 			"\nEntered console command with params: \n".
 			"a= {$a}\n".
-			"b= {$b}\n"
-		);
+			"b= {$b}\n";
 	}
 }

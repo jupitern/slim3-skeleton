@@ -46,7 +46,7 @@ Replace `[my-app-name]` with the desired directory name for your new application
 
 ### Routing
 
-The app comes with generic routes defines that will try to automatically match a uri with a class:method
+The app comes with build in generic route resolver that will try to automatically match a uri with a class:method
 and inject dependencies matching param names to container object indexes or a route argument.
 The routes bellow are a example for generic routing to all class:method in
 You can always define your routes one by one and use (or not) $app->resolveRoute method to inject your dependencies.
@@ -55,18 +55,31 @@ Example defining two routes for a website and backend folders:
 
 ```php
 
+// simple route example
+$app->get('/hello/{name}', function (Request $request, Response $response, $args) {
+	$name = $request->getAttribute('name');
+	$response->getBody()->write("Hello, $name");
+
+	return $response;
+});
+
+// example route to resolve request to uri '/' to \\App\\Http\\Site\\Welcome::index
+$app->any('/', function ($request, $response, $args) use($app) {
+	return $app->resolveRoute("\\App\\Http\\Site", "Welcome", "index", $args);
+});
+
 // resolves to a class:method under the namespace \\App\\Http\\App and
 // injects the :id param value into the method $id parameter
 // Other parameters in the method will be searched in the container using parameter name
 $app->any('/app/{class}/{method}[/{id:[0-9]+}]', function ($request, $response, $args) use($app) {
-	$app->resolveRoute($args, "\\App\\Http\\App");
+	return $app->resolveRoute("\\App\\Http\\App", $args['class'], $args['method'], $args);
 });
 
 // resolves to a class:method under the namespace \\App\\Http\\Site and
 // injects the :id param value into the method $id parameter
 // Other parameters in the method will be searched in the container using parameter name
 $app->any('/{class}/{method}[/{id:[0-9]+}]', function ($request, $response, $args) use($app) {
-	$app->resolveRoute($args, "\\App\\Http\\Site");
+	return $app->resolveRoute("\\App\\Http\\Site", $args['class'], $args['method'], $args);
 });
 ```
 
@@ -92,11 +105,10 @@ class Test extends Command
 
 	public function method($a, $b='foobar')
 	{
-		$this->response->write(
+		return
 			"\nEntered console command with params: \n".
 			"a= {$a}\n".
-			"b= {$b}\n"
-		);
+			"b= {$b}\n";
 	}
 }
 ```

@@ -12,9 +12,7 @@ class Welcome extends Controller
 		$this->logger->info("logging a message");
 
 		// sending a response
-		$this->response->write(
-			$this->view->render('site::test/welcome', ['name' => $id])
-		);
+		return $this->view->render('site::test/welcome', ['name' => $id]);
 	}
 
 }
