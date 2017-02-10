@@ -5,19 +5,16 @@ use \Psr\Http\Message\ResponseInterface as Response;
 
 // automatic console command resolver
 $app->get('/{command}/{method}', function (Request $request, Response $response, $args) use ($app, $argv) {
-	$parts = array_chunk($argv, 2);
 
 	$params = [];
-	if (isset($parts[1])) {
-		foreach ((array)$parts[1] as $param) {
-			$arr = explode('=', $param);
-			$params[$arr[0]] = $arr[1];
-		}
+	for ($i=2; $i<count($argv); ++$i) {
+		$parts = explode("=", $argv[$i]);
+		$params[$parts[0]] = $parts[1];
 	}
 
 	$response->withHeader('Content-Type', 'text/plain');
 
-	return $app->resolveRoute("\\App\\Console", $parts[0][0], $parts[0][1], $params);
+	return $app->resolveRoute("\\App\\Console", $argv[0], $argv[1], $params);
 });
 
 // help route to display available command in

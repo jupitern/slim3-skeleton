@@ -228,10 +228,13 @@ class App
 			$controllerObj = $class->newInstanceArgs($constructorArgs);
 			$ret = $method->invokeArgs($controllerObj, $methodArgs);
 
-			if ($ret instanceof ResponseInterface) {
+			if ($this->console && $ret === null) {
+				$response->write(0);
+			}
+			elseif ($ret instanceof ResponseInterface) {
 				$response = $ret;
 			}
-			if (is_string($ret) || is_numeric($ret)) {
+			elseif (is_string($ret) || is_numeric($ret)) {
 				$response->write($ret);
 			}
 		}
