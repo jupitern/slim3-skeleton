@@ -14,7 +14,10 @@ define('PUBLIC_PATH', realpath(__DIR__.'/public/').DS);
 require ROOT_PATH.'vendor'.DS.'autoload.php';
 
 $console = PHP_SAPI == 'cli' ? true : false;
+
 $settings = require CONFIG_PATH.'app.php';
+$settingsEnv = require CONFIG_PATH.($settings['settings']['environment']).'.php';
+$settings = array_merge_recursive($settings, $settingsEnv);
 
 if ($console) {
 
@@ -32,19 +35,19 @@ if ($console) {
 }
 
 // instance app
-$app = \Lib\App::instance($settings, $console);
+$app = \Lib\Framework\App::instance($settings, $console);
 // Set up dependencies
 $app->registerProviders();
 // Register middleware
 $app->registerMiddleware();
 
 if ($console) {
-	// include your routes for http requests here
-	require CONFIG_PATH.'routes_cli.php';
+	// include your routes for cli requests here
+	require CONFIG_PATH.'routes'.DS.'console.php';
 }
 else {
-	// include your routes for cli requests here
-	require CONFIG_PATH.'routes.php';
+	// include your routes for http requests here
+	require CONFIG_PATH.'routes'.DS.'app.php';
 }
 
 $app->run();
