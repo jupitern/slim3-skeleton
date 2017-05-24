@@ -5,7 +5,7 @@ namespace App\Console;
 class Test extends Command
 {
 
-	public function test($a, $b='foobar')
+	public function method($a, $b='foobar')
 	{
 		$this->logger->info("logging a message");
 

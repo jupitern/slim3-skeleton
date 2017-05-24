@@ -55,6 +55,9 @@ Example defining two routes for a website and backend folders:
 
 ```php
 
+use \Psr\Http\Message\ServerRequestInterface as Request;
+use \Psr\Http\Message\ResponseInterface as Response;
+
 // simple route example
 $app->get('/hello/{name}', function (Request $request, Response $response, $args) {
 	$name = $request->getAttribute('name');
@@ -68,19 +71,20 @@ $app->any('/', function ($request, $response, $args) use($app) {
 	return $app->resolveRoute("\\App\\Http\\Site", "Welcome", "index", $args);
 });
 
+// resolves to a class:method under the namespace \\App\\Http\\Site and
+// injects the :id param value into the method $id parameter
+// Other parameters in the method will be searched in the container using parameter name as key
+$app->any('/{class}/{method}[/{id:[0-9]+}]', function ($request, $response, $args) use($app) {
+	return $app->resolveRoute("\\App\\Http\\Site", $args['class'], $args['method'], $args);
+});
+
 // resolves to a class:method under the namespace \\App\\Http\\App and
 // injects the :id param value into the method $id parameter
-// Other parameters in the method will be searched in the container using parameter name
+// Other parameters in the method will be searched in the container using parameter name as key
 $app->any('/app/{class}/{method}[/{id:[0-9]+}]', function ($request, $response, $args) use($app) {
 	return $app->resolveRoute("\\App\\Http\\App", $args['class'], $args['method'], $args);
 });
 
-// resolves to a class:method under the namespace \\App\\Http\\Site and
-// injects the :id param value into the method $id parameter
-// Other parameters in the method will be searched in the container using parameter name
-$app->any('/{class}/{method}[/{id:[0-9]+}]', function ($request, $response, $args) use($app) {
-	return $app->resolveRoute("\\App\\Http\\Site", $args['class'], $args['method'], $args);
-});
 ```
 
 ### Console usage
@@ -146,15 +150,14 @@ var_dump($filesystem->listContents('', true));
 
 Write and read from session
 ```php
-\Lib\Session::set('user', ['id' => '1']);
-print_r(\Lib\Session::get('user'));
+\Lib\Utils\Session::set('user', ['id' => '1']);
+print_r(\Lib\Utils\Session::get('user'));
 ```
 
 ## Roadmap
 
- - [ ] improve dependency injection resolution
- - [ ] more service providers
- - [ ] more examples
+ - [ ] more service providers / separate service providers in packages
+ - [ ] more code examples
 
 ## Contributing
 
