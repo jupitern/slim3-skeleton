@@ -1,12 +1,16 @@
 <?php
 
-namespace Lib;
+namespace Lib\Framework;
 use Psr\Http\Message\ResponseInterface;
 
 class App
 {
-
 	public $console = false;
+
+	public static $env = self::DEVELOPMENT;
+	const DEVELOPMENT = 'development';
+	const STAGING = 'staging';
+	const PRODUCTION = 'production';
 
 	/** @var \Slim\App */
 	private $slim = null;
@@ -16,7 +20,7 @@ class App
 
 	protected function __construct($settings, $console = false)
 	{
-		$displayErrorDetails = $settings['settings']['displayErrorDetails'];
+		$displayErrorDetails = self::$env == self::DEVELOPMENT;
 		$this->settings = $settings;
 		$this->console = $console;
 		$this->slim = new \Slim\App($this->settings);
@@ -69,34 +73,13 @@ class App
 	}
 
 	/**
-	 * resolve a dependency from the container
-	 *
-	 * @param string $name
-	 * @param string $params
-	 * @param mixed
-	 */
-	public function resolve($name, $params = [])
-	{
-		$container = $this->getContainer();
-		if ($container->has($name)) {
-			if (is_callable($container[$name])) {
-				return call_user_func_array($container[$name], $params);
-			}
-			else {
-				return $container[$name];
-			}
-		}
-		return null;
-	}
-
-	/**
 	 * set configuration param
 	 *
 	 * @param array $config
 	 */
 	public function setConfig( $param, $value )
 	{
-		$dn = new \Lib\DotNotation($this->settings);
+		$dn = new \Lib\Utils\DotNotation($this->settings);
 		$dn->set($param, $value);
 	}
 
@@ -109,7 +92,7 @@ class App
 	 */
 	public function getConfig( $param, $defaultValue = null )
 	{
-		$dn = new \Lib\DotNotation($this->settings);
+		$dn = new \Lib\Utils\DotNotation($this->settings);
 		return $dn->get($param, $defaultValue);
 	}
 
@@ -155,29 +138,22 @@ class App
 	}
 
 	/**
-	 * retrieve base url
-	 *
-	 * @param $url
-	 * @param $includeBaseUrl
-	 * @return string
-	 */
-	public function baseUrl()
-	{
-		return $this->getConfig('settings.baseUrl');
-	}
-
-	/**
 	 * generate a url
 	 *
 	 * @param string $url
+	 * @param boolean $showIndex pass null to assume config file value
 	 * @param boolean $includeBaseUrl
 	 * @return string
 	 */
-	public function url($url = '', $includeBaseUrl = true)
+	public function url($url = '', $showIndex = null, $includeBaseUrl = true)
 	{
 		$baseUrl = $includeBaseUrl ? $this->getConfig('settings.baseUrl') : '';
-		$indexFile = (bool)$this->getConfig('settings.indexFile') ? 'index.php/' : '';
-		if (strlen($url) > 0 && $url[0] == '/') $url = ltrim($url, '/');
+
+		$indexFile = '';
+		if ($showIndex === null && (bool)$this->getConfig('settings.indexFile')) {
+			$indexFile = 'index.php/';
+		}
+		if (strlen($url) > 0 && $url[0] == '/') $uri = ltrim($url, '/');
 
 		return $baseUrl.$indexFile.$url;
 	}
@@ -205,38 +181,32 @@ class App
 	 * @param string $namespace
 	 * @param string $className
 	 * @param string $methodName
-	 * @param array $params
+	 * @param array $requestParams
 	 * @return \Psr\Http\Message\ResponseInterface
 	 */
-	public function resolveRoute($namespace = "\\App\\Http", $className, $methodName, $params = [])
+	public function resolveRoute($namespace = "\\App\\Http", $className, $methodName, $requestParams = [])
 	{
 		$response = $this->resolve('response');
-		$className = $namespace.'\\'.$className;
 
-		if (!method_exists($className, $methodName)) {
+		$class = new \ReflectionClass($namespace.'\\'.$className);
+
+		if (!$class->isInstantiable() || !$class->hasMethod($methodName)) {
 			$handler = $this->getContainer()['notFoundHandler'];
-			$response = $handler($this->getContainer()['request'], $this->getContainer()['response']);
+			return $handler($this->getContainer()['request'], $this->getContainer()['response']);
 		}
-		else {
-			$class = new \ReflectionClass($className);
-			$constructor = $class->getConstructor();
-			$method = $class->getMethod($methodName);
 
-			$constructorArgs = $constructor !== null ? $this->resolveDependencies($class, $constructor, $params) : [];
-			$methodArgs = $this->resolveDependencies($class, $method, $params);
+		$controllerObj = $this->resolve($namespace."\\{$className}");
 
-			$controllerObj = $class->newInstanceArgs($constructorArgs);
-			$ret = $method->invokeArgs($controllerObj, $methodArgs);
+		$method = $class->getMethod($methodName);
+		$methodArgs = $this->resolveDependencies($method->getParameters(), $requestParams);
 
-			if ($this->console && $ret === null) {
-				$response->write(0);
-			}
-			elseif ($ret instanceof ResponseInterface) {
-				$response = $ret;
-			}
-			elseif (is_string($ret) || is_numeric($ret)) {
-				$response->write($ret);
-			}
+		$ret = $method->invokeArgs($controllerObj, $methodArgs);
+
+		if ($ret instanceof ResponseInterface) {
+			$response = $ret;
+		}
+		elseif (is_string($ret) || is_numeric($ret)) {
+			$response->write($ret);
 		}
 
 		return $response;
@@ -244,31 +214,71 @@ class App
 
 
 	/**
-	 * resolve dependencies to inject searching in order (container, method, default value)
+	 * resolve a dependency from the container
 	 *
-	 * @param \ReflectionClass $className
-	 * @param \ReflectionMethod $methodName
-	 * @param array $requestParams
+	 * @param string $name
+	 * @param string $params
+	 * @param mixed
 	 */
-	private function resolveDependencies(\ReflectionClass $class, \ReflectionMethod $method = null, $requestParams = [])
+	public function resolve($name, $params = [])
 	{
-		$methodArgs = [];
-		foreach ($method->getParameters() as $param) {
-			$dependency = $this->resolve($param->getName());
-			if ($dependency) {
-				$methodArgs[] = $dependency;
-			}
-			elseif (array_key_exists($param->getName(), $requestParams)) {
-				$methodArgs[] = $requestParams[$param->getName()];
-			}
-			elseif ($param->isDefaultValueAvailable()) {
-				$methodArgs[] = $param->getDefaultValue();
-			}
-			else {
-				throw new \Exception("Error resolving method dependencies");
+		$container = $this->getContainer();
+
+		if ($container->has($name)) {
+			return is_callable($container[$name]) ? call_user_func_array($container[$name], $params) : $container[$name];
+		}
+
+		if (class_exists($name)) {
+			$reflector = new \ReflectionClass($name);
+
+			if ($reflector->isInstantiable()) {
+				$constructor = $reflector->getConstructor();
+
+				if ($constructor === null) {
+					return new $name;
+				} else {
+					$dependencies = $this->resolveDependencies($constructor->getParameters(), $params);
+					return $reflector->newInstanceArgs($dependencies);
+				}
 			}
 		}
-		return $methodArgs;
+
+		return null;
+	}
+
+
+	/**
+	 * resolve a list of dependencies for a given method parameters
+	 *
+	 * @param array $params
+	 * @param array $values
+	 * @return array
+	 */
+	private function resolveDependencies(array $params = [], array $values = [])
+	{
+		$dependencies = [];
+		foreach ($params as $param) {
+
+			if (array_key_exists($param->getName(), $values)) {
+				$dependencies[] = $values[$param->getName()];
+			} else {
+				$dependencyName = !empty($param->getClass()) ? $param->getClass()->getName() : $param->getName();
+
+				$dependency = $this->resolve($dependencyName, $values);
+
+				if ($dependency !== null) {
+					$dependencies[] = $dependency;
+				}
+				elseif ($param->isDefaultValueAvailable()) {
+					$dependencies[] = $param->getDefaultValue();
+				}
+				else {
+					throw new \Exception("Error resolving method dependencies for param {$param->getName()}");
+				}
+			}
+		}
+
+		return $dependencies;
 	}
 
 }

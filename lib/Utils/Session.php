@@ -1,6 +1,6 @@
 <?php
 
-namespace Lib;
+namespace Lib\Utils;
 
 final class Session
 {
