@@ -11,9 +11,9 @@ return [
 		'appLogFilePath' => STORAGE_PATH."logs\\app_".date('Ymd').".log",
 		// template folders
 		'templates' => [
-			'console' => RESOURCES_PATH."views\\console",
 			'error' => RESOURCES_PATH."views\\http\\error",
-			'app' 	=> RESOURCES_PATH."views\\http\\app",
+			'console' => RESOURCES_PATH."views\\console",
+			'site' 	=> RESOURCES_PATH."views\\http\\site",
 			'mail' 	=> RESOURCES_PATH."views\\mail",
 		],
 		'session' => [
