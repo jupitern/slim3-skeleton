@@ -1,13 +1,8 @@
 <?php
 return [
 	'settings' => [
-		// url config. Url must end with a slash '/'
-		'baseUrl' => 'http://localhost:8080/',
-		'indexFile' => true,
-		// display errors details
-		'displayErrorDetails' => true,
-		// debug mode
-		'debug' => true,
+		'environment' => 'development',
+		'addContentLengthHeader' => false,
 		// default timezone
 		'timezone' => 'Europe/Lisbon',
 		// Only set this if you need access to route within middleware
@@ -16,42 +11,20 @@ return [
 		'appLogFilePath' => STORAGE_PATH."logs\\app_".date('Ymd').".log",
 		// template folders
 		'templates' => [
-			'error' => RESOURCES_PATH."views\\error",
+			'console' => RESOURCES_PATH."views\\console",
+			'error' => RESOURCES_PATH."views\\http\\error",
+			'app' 	=> RESOURCES_PATH."views\\http\\app",
 			'mail' 	=> RESOURCES_PATH."views\\mail",
-			'site' 	=> RESOURCES_PATH."views\\site",
 		],
 		'session' => [
 			'name' => 'app',
 			'lifetime' => 7200,
-			'path' => null,
+			'path' => '/',
 			'domain' => null,
 			'secure' => false,
 			'httponly' => true,
 			'cache_limiter' => 'nocache',
-		],
-		// database configs
-		'database' => [
-			// default db connection settings
-			'default' => [
-				'driver'    => 'mysql',
-				'host'      => '',
-				'database'  => '',
-				'username'  => '',
-				'password'  => '',
-				'charset'   => 'utf8',
-				'collation' => 'utf8_unicode_ci',
-				'prefix'    => ''
-			],
-			// sqlsrv config
-//			'default' => array(
-//				'driver' 	=> 'sqlsrv',
-//				'host' 		=> '',
-//				'database' 	=> '',
-//				'username' 	=> '',
-//				'password' 	=> '',
-//				'prefix' 	=> '',
-//			),
-			// add another db connection here
+			'filesPath' => STORAGE_PATH.'sessions\\',
 		],
 		// storage settings
 		'filesystem' => [
@@ -85,6 +58,7 @@ return [
 		],
 	],
 	// add your service providers here
+	// providers bellow are ALWAYS added
 	'providers' => [
 		'\\App\\ServiceProviders\\Whoops',
 		'\\App\\ServiceProviders\\Monolog',
