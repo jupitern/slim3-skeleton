@@ -22,12 +22,11 @@ class Plates
 		$this->container['view'] = function ($c) use($basePath) {
 			return function($directory = null, $fileExtension = 'php') use($basePath) {
 				$plates = new Engine($directory, $fileExtension);
-				$plates->loadExtension(new URI($basePath));
-				$plates->registerFunction('url', function ($url, $includeBaseUrl = true) {
-					return \Lib\App::instance()->url($url, $includeBaseUrl);
+				$plates->registerFunction('url', function ($url, $showIndex = null, $includeBaseUrl = true) {
+					return \Lib\Framework\App::instance()->url($url, $showIndex, $includeBaseUrl);
 				});
 
-				$templatesPath = \Lib\App::instance()->getConfig('settings.templates');
+				$templatesPath = \Lib\Framework\App::instance()->getConfig('settings.templates');
 				foreach ($templatesPath as $name => $path) {
 					$plates->addFolder($name, $path, true);
 				}

@@ -16,7 +16,7 @@ class Eloquent
 
 	public function __invoke(ServerRequestInterface $request, ResponseInterface $response, $next)
 	{
-		$settings = \Lib\App::instance()->getConfig('settings');
+		$settings = \Lib\Framework\App::instance()->getConfig('settings');
 		$debug = $settings['debug'];
 
 		// register connections
@@ -31,7 +31,7 @@ class Eloquent
 		$this->container['database'] = function ($c) use ($debug) {
 			return function($name = 'default') use ($debug) {
 				$conn = Capsule::connection($name);
-				if ($debug) {
+				if ($conn->getConfig('profiling') == true) {
 					$conn->enableQueryLog();
 				}
 				return $conn;

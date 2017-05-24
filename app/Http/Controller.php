@@ -5,6 +5,7 @@ namespace App\Http;
 
 Abstract class Controller
 {
+
 	/** @var \Psr\Http\Message\ServerRequestInterface */
 	public $request;
 	/** @var \Psr\Http\Message\ResponseInterface */
@@ -18,8 +19,14 @@ Abstract class Controller
 	{
 		$this->request = $request;
 		$this->response = $response;
-		$this->view = $view;
 		$this->logger = $logger;
+		$this->view = $view;
+	}
+
+
+	protected function url($url = '', $showIndex = null, $includeBaseUrl = true)
+	{
+		return \Lib\Framework\App::instance()->url($url, $showIndex, $includeBaseUrl);
 	}
 
 }

@@ -17,9 +17,9 @@ class Mailer
 	public function __invoke(ServerRequestInterface $request, ResponseInterface $response, $next)
 	{
 		$this->container['mailer'] = function ($c) {
-			return function($to = [], $cc = [], $bcc = [], $subject, $body, $altBody, $attachments = [], $configName = 'default', $configsOverride = []) {
+			return function($to = [], $cc = [], $bcc = [], $subject = '', $body = '', $altBody = '', $attachments = [], $configName = 'default', $configsOverride = []) {
 
-				$defaultConfigs = \Lib\App::instance()->getConfig("settings.mail.{$configName}");
+				$defaultConfigs = \Lib\Framework\App::instance()->getConfig("settings.mail.{$configName}");
 				$configs = array_merge($defaultConfigs, $configsOverride);
 
 				$mail = new PHPMailer;

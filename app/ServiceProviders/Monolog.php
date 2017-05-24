@@ -1,10 +1,12 @@
 <?php
 
 namespace App\ServiceProviders;
+use Lib\Framework\App;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
+use Monolog\Handler\ChromePHPHandler;
 
 class Monolog
 {
@@ -19,17 +21,17 @@ class Monolog
 		$this->container['logger'] = function($c) {
 			return function($name = null, $logFilePath = null) {
 
-				$app = \Lib\App::instance();
+				$app = App::instance();
 				if ($name === null) {
 					$name = $app->console ? 'console' : 'app';
 				}
 				if ($logFilePath === null) {
 					$logFilePath = $app->getConfig("settings.appLogFilePath");
 				}
-				$logger = new \Monolog\Logger($name);
-				$logger->pushHandler(new \Monolog\Handler\StreamHandler($logFilePath, Logger::INFO));
+				$logger = new Logger($name);
+				$logger->pushHandler(new StreamHandler($logFilePath, Logger::INFO));
 				if ((bool)$app->getConfig("settings.debug")) {
-					$logger->pushHandler(new \Monolog\Handler\ChromePHPHandler(Logger::DEBUG));
+					$logger->pushHandler(new ChromePHPHandler(Logger::DEBUG));
 				}
 				return $logger;
 			};
