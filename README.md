@@ -1,8 +1,8 @@
 # Slim Framework 3 Skeleton Application (http + cli)
 
-Use this skeleton application to quickly setup and start working on a new Slim Framework 3 application (Developed with slim 3.7).
+Use this skeleton application to quickly setup and start working on a new Slim Framework 3 application (Tested with slim 3.8).
 This application handles http and command line requests.
-The application has service providers available. All are optional and you can disable them in the config/app.php file
+This application ships with a few service providers and middleware out of the box. All are optional and you can disable them in the config/app.php file
 
 Available service providers:
 
@@ -13,7 +13,9 @@ Available service providers:
 * Flysystem
 * PHPMailer
 
-Third party service providers should also work out of the box.
+Available middleware:
+
+* Session
 
 ### Install the Application
 
@@ -38,18 +40,19 @@ Replace `[my-app-name]` with the desired directory name for your new application
 
 * `app`:        Application code (models, controllers, cli commands, handlers, middleware, service providers and others)
 * `config`:     Configuration files like db, mail, routes...
-* `lib`:        Other project classes
+* `lib`:        Other project classes like utils, business logic and framework extensions
 * `resources`:  Views as well as your raw, un-compiled assets such as LESS, SASS, or JavaScript.
 * `storage`:    Log files, cache files...
 * `public`:     The public directory contains `index.php` file, assets such as images, JavaScript, and CSS
 * `vendor`:     Composer dependencies
 
-### Routing
+### Routing and Dependency injection
 
-The app comes with build in generic route resolver that will try to automatically match a uri with a class:method
-and inject dependencies matching param names to container object indexes or a route argument.
-The routes bellow are a example for generic routing to all class:method in
-You can always define your routes one by one and use (or not) $app->resolveRoute method to inject your dependencies.
+The app class has a route resolver method that:
+* matches and injects params into the controller action passed as uri arguments
+* looks up and injects dependencies from the container by matching controller constructor / method argument names
+* automatic Resolution using controller constructor / method argument types
+* accepts string or Response object as controller action response
 
 Example defining two routes for a website and backend folders:
 
@@ -66,24 +69,51 @@ $app->get('/hello/{name}', function (Request $request, Response $response, $args
 	return $response;
 });
 
+
 // example route to resolve request to uri '/' to \\App\\Http\\Site\\Welcome::index
 $app->any('/', function ($request, $response, $args) use($app) {
 	return $app->resolveRoute("\\App\\Http\\Site", "Welcome", "index", $args);
 });
 
-// resolves to a class:method under the namespace \\App\\Http\\Site and
+
+// example using container resolution and automatic resolution
+// resolves to a class:method under the namespace \\App\\Http\\Site
 // injects the :id param value into the method $id parameter
-// Other parameters in the method will be searched in the container using parameter name as key
+// injects
 $app->any('/{class}/{method}[/{id:[0-9]+}]', function ($request, $response, $args) use($app) {
 	return $app->resolveRoute("\\App\\Http\\Site", $args['class'], $args['method'], $args);
 });
 
+namespace App\Http\Site;
+use \App\Http\Controller;
+
+class Welcome extends Controller
+{
+	public function index($id, $request, )
+	{
+	    return "id = {$id}";
+	}
+}
+
+
+// example calling http://localhost:8080/index.php/app/test/method/1 with the route bellow
 // resolves to a class:method under the namespace \\App\\Http\\App and
 // injects the :id param value into the method $id parameter
 // Other parameters in the method will be searched in the container using parameter name as key
 $app->any('/app/{class}/{method}[/{id:[0-9]+}]', function ($request, $response, $args) use($app) {
 	return $app->resolveRoute("\\App\\Http\\App", $args['class'], $args['method'], $args);
 });
+
+namespace App\Http\App;
+use \App\Http\Controller;
+
+class Test extends Controller
+{
+	public function method($id, $request, \App\Model\User $user)
+	{
+	    return get_class($request)."<br/>".get_class($user)."<br/>id = {$id}";
+	}
+}
 
 ```
 
@@ -129,26 +159,26 @@ Execute the class:method from command line:
 
 ### Code examples
 
-Read a user from db
+Read a user from db using Laravel Eloquent service provider
 ```php
 $user = \App\Model\User::find(1);
 echo $user->Name;
 ```
 
-Send a email
+Send a email using PHPMailer service provider
 ```php
 $app->resolve('mailer', [
     ['john_doe@domain.com'], [], [], 'test', 'test', 'teste alt body',
 ])->send();
 ```
 
-List a directory content with flysystem
+List a directory content with Flysystem service provider
 ```php
 $filesystem = $app->resolve('filesystem', ['local']);
 var_dump($filesystem->listContents('', true));
 ```
 
-Write and read from session
+Write and read from session using Session service provider
 ```php
 \Lib\Utils\Session::set('user', ['id' => '1']);
 print_r(\Lib\Utils\Session::get('user'));
