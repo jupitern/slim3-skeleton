@@ -129,7 +129,7 @@ class DotNotation
 	}
 
 	/**
-	 * @param array $values
+	 * @param string $path
 	 */
 	protected function explode($path)
 	{

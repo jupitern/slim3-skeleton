@@ -18,6 +18,7 @@ final class Error extends \Slim\Handlers\Error
 
 	public function __invoke(Request $request, Response $response, \Exception $exception)
 	{
+
 		$app = \Lib\Framework\App::instance();
 
 		// Log the message
@@ -26,20 +27,12 @@ final class Error extends \Slim\Handlers\Error
 		}
 
 		if ($app->console) {
-			echo "Error: ".$exception->getMessage()."\n\n";
-			echo $exception->getTraceAsString();
-			return $response;
+			return $app->sendResponse("Error: " . $exception->getMessage() . "\n\n" . $exception->getTraceAsString());
 		}
 
 		if (!$this->displayErrorDetails) {
-			return $response
-				->withStatus(500)
-				->withHeader('Content-Type', 'text/html')
-				->write($app->resolve('view')->render('error::500', ['message' => $exception->getMessage()]));
-		}
-
-		if (isset($app->getContainer()['whoops'])) {
-			$app->getContainer()->get('whoops')->handleException($exception);
+			$resp = $app->resolve('view')->render('error::500', ['message' => $exception->getMessage()]);
+			return $app->sendResponse($resp, 500);
 		}
 
 		return parent::__invoke($request, $response, $exception);

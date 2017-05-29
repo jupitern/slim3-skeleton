@@ -20,12 +20,12 @@ class App
 
 	protected function __construct($settings, $console = false)
 	{
-		$displayErrorDetails = self::$env == self::DEVELOPMENT;
 		$this->settings = $settings;
 		$this->console = $console;
-		$this->slim = new \Slim\App($this->settings);
+		$this->slim = new \Slim\App($settings);
+		$displayErrorDetails = $settings['settings']['debug'];
 
-		date_default_timezone_set($this->settings['settings']['timezone']);
+		date_default_timezone_set($settings['settings']['timezone']);
 
 		set_error_handler(function($errno, $errstr, $errfile, $errline) {
 			if (!($errno & error_reporting())) {
@@ -155,10 +155,35 @@ class App
 			$indexFile = 'index.php/';
 		}
 		if (strlen($url) > 0 && $url[0] == '/') {
-			$uri = ltrim($url, '/');
+			$url = ltrim($url, '/');
 		}
 
 		return $baseUrl.$indexFile.$url;
+	}
+
+	/**
+	 * return a response object
+	 *
+	 * @param mixed $resp
+	 * @return \Psr\Http\Message\ResponseInterface
+	 */
+	public function sendResponse($resp, $statusCode = 200, $responseType = 'text/html')
+	{
+		$response = $this->resolve('response');
+
+		if ($this->console) {
+			echo $resp;
+		} else {
+			if ($resp instanceof ResponseInterface) {
+				$response = $resp;
+			} elseif (is_string($resp) || is_numeric($resp)) {
+				$response->write($resp);
+			} elseif (is_array($resp) || is_object($resp)) {
+				$response->withJson($resp);
+			}
+		}
+
+		return $response;
 	}
 
 	/**
@@ -175,44 +200,6 @@ class App
 			var_dump($var);
 		}
 		echo '</pre>';
-	}
-
-
-	/**
-	 * resolve and call a given class / method
-	 *
-	 * @param string $namespace
-	 * @param string $className
-	 * @param string $methodName
-	 * @param array $requestParams
-	 * @return \Psr\Http\Message\ResponseInterface
-	 */
-	public function resolveRoute($namespace = "\\App\\Http", $className, $methodName, $requestParams = [])
-	{
-		$response = $this->resolve('response');
-
-		$class = new \ReflectionClass($namespace.'\\'.$className);
-
-		if (!$class->isInstantiable() || !$class->hasMethod($methodName)) {
-			$handler = $this->getContainer()['notFoundHandler'];
-			return $handler($this->getContainer()['request'], $this->getContainer()['response']);
-		}
-
-		$method = $class->getMethod($methodName);
-		$constructorArgs = $this->resolveDependencies($class->getConstructor()->getParameters());
-		$methodArgs = $this->resolveDependencies($method->getParameters(), $requestParams);
-
-		$ret = $method->invokeArgs($class->newInstanceArgs($constructorArgs), $methodArgs);
-
-		if ($ret instanceof ResponseInterface) {
-			$response = $ret;
-		} elseif (is_string($ret) || is_numeric($ret)) {
-			$response->write($ret);
-		} elseif (is_array($ret) || is_object($ret)) {
-			$response->withJson($ret);
-		}
-
-		return $response;
 	}
 
 
@@ -247,6 +234,35 @@ class App
 		}
 
 		return null;
+	}
+
+
+	/**
+	 * resolve and call a given class / method
+	 *
+	 * @param string $namespace
+	 * @param string $className
+	 * @param string $methodName
+	 * @param array $requestParams
+	 * @return \Psr\Http\Message\ResponseInterface
+	 */
+	public function resolveRoute($namespace = "\\App\\Http", $className, $methodName, $requestParams = [])
+	{
+		$response = $this->resolve('response');
+
+		$class = new \ReflectionClass($namespace.'\\'.$className);
+
+		if (!$class->isInstantiable() || !$class->hasMethod($methodName)) {
+			$handler = $this->getContainer()['notFoundHandler'];
+			return $handler($this->getContainer()['request'], $this->getContainer()['response']);
+		}
+
+		$method = $class->getMethod($methodName);
+		$constructorArgs = $this->resolveDependencies($class->getConstructor()->getParameters());
+		$methodArgs = $this->resolveDependencies($method->getParameters(), $requestParams);
+		$ret = $method->invokeArgs($class->newInstanceArgs($constructorArgs), $methodArgs);
+
+		return $this->sendResponse($ret);
 	}
 
 

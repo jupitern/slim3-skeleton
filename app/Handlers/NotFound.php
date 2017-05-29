@@ -25,14 +25,10 @@ final class NotFound extends \Slim\Handlers\NotFound
 		}
 
 		if ($app->console) {
-			echo "Error: request does not match any command::method or mandatory params are not properly set\n";
-			return $response;
+			return $app->sendResponse("Error: request does not match any command::method or mandatory params are not properly set\n");
 		}
 
-		return $response
-			->withStatus(404)
-			->withHeader('Content-Type', 'text/html')
-			->write($app->resolve('view')->render('error::404'));
+		return $app->sendResponse($app->resolve('view')->render('error::404'), 404);
 	}
 
 	// Function to get the client IP address

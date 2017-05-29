@@ -2,7 +2,7 @@
 return [
 	'settings' => [
 		// debug options
-		'debug' => true,
+		'debug' => false,
 		// url config. Url must end with a slash '/'
 		'baseUrl' => 'http://localhost:8080/',
 		'indexFile' => true,

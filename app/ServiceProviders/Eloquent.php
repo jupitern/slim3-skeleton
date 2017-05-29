@@ -17,7 +17,6 @@ class Eloquent
 	public function __invoke(ServerRequestInterface $request, ResponseInterface $response, $next)
 	{
 		$settings = \Lib\Framework\App::instance()->getConfig('settings');
-		$debug = $settings['debug'];
 
 		// register connections
 		$capsule = new Capsule;
@@ -28,8 +27,8 @@ class Eloquent
         $capsule->setAsGlobal();
         $capsule->bootEloquent();
 
-		$this->container['database'] = function ($c) use ($debug) {
-			return function($name = 'default') use ($debug) {
+		$this->container['database'] = function ($c) {
+			return function($name = 'default') {
 				$conn = Capsule::connection($name);
 				if ($conn->getConfig('profiling') == true) {
 					$conn->enableQueryLog();

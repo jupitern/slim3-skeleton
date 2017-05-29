@@ -26,16 +26,12 @@ final class PhpError extends \Slim\Handlers\PhpError
 		}
 
 		if ($app->console) {
-			echo "Error: ".$error->getMessage()."\n\n";
-			echo $error->getTraceAsString();
-			return $response;
+			$response = $app->sendResponse("Error: " . $error->getMessage() . "\n\n" . $error->getTraceAsString());
 		}
 
 		if (!$this->displayErrorDetails) {
-			return $response
-				->withStatus(500)
-				->withHeader('Content-Type', 'text/html')
-				->write($app->resolve('view')->render('error::500', ['message' => $error->getMessage()]));
+			$resp = $app->resolve('view')->render('error::500', ['message' => $error->getMessage()]);
+			return $app->sendResponse($resp, 500);
 		}
 
 		return parent::__invoke($request, $response, $error);
