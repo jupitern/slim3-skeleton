@@ -27,7 +27,7 @@ class App
 
 		date_default_timezone_set($this->settings['settings']['timezone']);
 
-		set_error_handler(function ($errno, $errstr, $errfile, $errline) {
+		set_error_handler(function($errno, $errstr, $errfile, $errline) {
 			if (!($errno & error_reporting())) {
 				return;
 			}
@@ -36,13 +36,13 @@ class App
 
 		$loggerName = $this->console ? 'console' : 'app';
 
-		$this->getContainer()['errorHandler'] = function ($c) use($loggerName, $displayErrorDetails) {
+		$this->getContainer()['errorHandler'] = function($c) use($loggerName, $displayErrorDetails) {
 			return new \App\Handlers\Error($displayErrorDetails, $this->resolve('logger'));
 		};
-		$this->getContainer()['phpErrorHandler'] = function ($c) use($loggerName, $displayErrorDetails) {
+		$this->getContainer()['phpErrorHandler'] = function($c) use($loggerName, $displayErrorDetails) {
 			return new \App\Handlers\PhpError($displayErrorDetails, $this->resolve('logger'));
 		};
-		$this->getContainer()['notFoundHandler'] = function ($c) use($loggerName, $displayErrorDetails) {
+		$this->getContainer()['notFoundHandler'] = function($c) use($loggerName, $displayErrorDetails) {
 			return new \App\Handlers\NotFound($this->resolve('logger'));
 		};
 	}
@@ -75,9 +75,10 @@ class App
 	/**
 	 * set configuration param
 	 *
-	 * @param array $config
+	 * @param string $param
+	 * @param mixed $value
 	 */
-	public function setConfig( $param, $value )
+	public function setConfig($param, $value)
 	{
 		$dn = new \Lib\Utils\DotNotation($this->settings);
 		$dn->set($param, $value);
@@ -90,7 +91,7 @@ class App
 	 * @param string $defaultValue
 	 * @return mixed
 	 */
-	public function getConfig( $param, $defaultValue = null )
+	public function getConfig($param, $defaultValue = null)
 	{
 		$dn = new \Lib\Utils\DotNotation($this->settings);
 		return $dn->get($param, $defaultValue);
@@ -117,7 +118,7 @@ class App
 	}
 
 	//proxy calls to slim
-	public function __call($fn,$args=[])
+	public function __call($fn, $args=[])
 	{
 		if (method_exists($this->slim,$fn)) {
 			return call_user_func_array([$this->slim,$fn] , $args);
@@ -126,7 +127,7 @@ class App
 	}
 
 	//proxy all sets to slim
-	public function __set($k,$v)
+	public function __set($k, $v)
 	{
 		$this->slim->{$k} = $v;
 	}
@@ -153,7 +154,9 @@ class App
 		if ($showIndex === null && (bool)$this->getConfig('settings.indexFile')) {
 			$indexFile = 'index.php/';
 		}
-		if (strlen($url) > 0 && $url[0] == '/') $uri = ltrim($url, '/');
+		if (strlen($url) > 0 && $url[0] == '/') {
+			$uri = ltrim($url, '/');
+		}
 
 		return $baseUrl.$indexFile.$url;
 	}
@@ -166,10 +169,10 @@ class App
 	public static function debug($var)
 	{
 		echo '<pre>';
-		if ( is_array( $var ) )  {
-			print_r ( $var );
+		if (is_array($var)) {
+			print_r($var);
 		} else {
-			var_dump ( $var );
+			var_dump($var);
 		}
 		echo '</pre>';
 	}
@@ -195,18 +198,18 @@ class App
 			return $handler($this->getContainer()['request'], $this->getContainer()['response']);
 		}
 
-		$controllerObj = $this->resolve($namespace."\\{$className}");
-
 		$method = $class->getMethod($methodName);
+		$constructorArgs = $this->resolveDependencies($class->getConstructor()->getParameters());
 		$methodArgs = $this->resolveDependencies($method->getParameters(), $requestParams);
 
-		$ret = $method->invokeArgs($controllerObj, $methodArgs);
+		$ret = $method->invokeArgs($class->newInstanceArgs($constructorArgs), $methodArgs);
 
 		if ($ret instanceof ResponseInterface) {
 			$response = $ret;
-		}
-		elseif (is_string($ret) || is_numeric($ret)) {
+		} elseif (is_string($ret) || is_numeric($ret)) {
 			$response->write($ret);
+		} elseif (is_array($ret) || is_object($ret)) {
+			$response->withJson($ret);
 		}
 
 		return $response;
@@ -268,11 +271,9 @@ class App
 
 				if ($dependency !== null) {
 					$dependencies[] = $dependency;
-				}
-				elseif ($param->isDefaultValueAvailable()) {
+				} elseif ($param->isDefaultValueAvailable()) {
 					$dependencies[] = $param->getDefaultValue();
-				}
-				else {
+				} else {
 					throw new \Exception("Error resolving method dependencies for param {$param->getName()}");
 				}
 			}

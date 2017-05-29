@@ -128,6 +128,9 @@ class DotNotation
 		return $this->values;
 	}
 
+	/**
+	 * @param array $values
+	 */
 	protected function explode($path)
 	{
 		return preg_split(self::SEPARATOR, $path);
