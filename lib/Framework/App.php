@@ -167,7 +167,7 @@ class App
 	 * @param mixed $resp
 	 * @return \Psr\Http\Message\ResponseInterface
 	 */
-	public function sendResponse($resp, $statusCode = 200, $responseType = 'text/html')
+	public function sendResponse($resp, $statusCode = 200, $contentType = 'text/html')
 	{
 		$response = $this->resolve('response');
 
@@ -177,9 +177,14 @@ class App
 			if ($resp instanceof ResponseInterface) {
 				$response = $resp;
 			} elseif (is_string($resp) || is_numeric($resp)) {
-				$response->write($resp);
+				$response
+					->withStatus($statusCode)
+					->withHeader('Content-Type', $contentType)
+					->write($resp);
 			} elseif (is_array($resp) || is_object($resp)) {
-				$response->withJson($resp);
+				$response
+					->withStatus($statusCode)
+					->withJson($resp);
 			}
 		}
 
