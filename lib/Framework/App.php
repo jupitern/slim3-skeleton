@@ -253,8 +253,6 @@ class App
 	 */
 	public function resolveRoute($namespace = "\\App\\Http", $className, $methodName, $requestParams = [])
 	{
-		$response = $this->resolve('response');
-
 		$class = new \ReflectionClass($namespace.'\\'.$className);
 
 		if (!$class->isInstantiable() || !$class->hasMethod($methodName)) {
