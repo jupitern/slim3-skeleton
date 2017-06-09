@@ -8,13 +8,13 @@ return [
 		// Only set this if you need access to route within middleware
         'determineRouteBeforeAppMiddleware' => false,
 		// log file path
-		'appLogFilePath' => STORAGE_PATH."logs\\app_".date('Ymd').".log",
+		'appLogFilePath' => STORAGE_PATH."logs".DS."app_".date('Ymd').".log",
 		// template folders
 		'templates' => [
-			'error' => RESOURCES_PATH."views\\http\\error",
-			'console' => RESOURCES_PATH."views\\console",
-			'site' 	=> RESOURCES_PATH."views\\http\\site",
-			'mail' 	=> RESOURCES_PATH."views\\mail",
+			'error' => RESOURCES_PATH."views".DS."http".DS."error",
+			'console' => RESOURCES_PATH."views".DS."console",
+			'site' 	=> RESOURCES_PATH."views".DS."http".DS."site",
+			'mail' 	=> RESOURCES_PATH."views.".DS."mail",
 		],
 		'session' => [
 			'name' => 'app',
@@ -24,7 +24,7 @@ return [
 			'secure' => false,
 			'httponly' => true,
 			'cache_limiter' => 'nocache',
-			'filesPath' => STORAGE_PATH.'sessions\\',
+			'filesPath' => STORAGE_PATH.'sessions'.DS,
 		],
 		// storage settings
 		'filesystem' => [
