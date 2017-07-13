@@ -14,7 +14,7 @@ return [
 			'error' => RESOURCES_PATH."views".DS."http".DS."error",
 			'console' => RESOURCES_PATH."views".DS."console",
 			'site' 	=> RESOURCES_PATH."views".DS."http".DS."site",
-			'mail' 	=> RESOURCES_PATH."views.".DS."mail",
+			'mail' 	=> RESOURCES_PATH."views".DS."mail",
 		],
 		'session' => [
 			'name' => 'app',

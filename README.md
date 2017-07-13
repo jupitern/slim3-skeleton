@@ -152,9 +152,9 @@ Execute the class:method from command line:
 ```php
 // since param "b" is optional you can use one of the following commands
 
-> php cli.php test method a=foo b=bar
+> php cli.php Test method a=foo b=bar
 
-> php cli.php test method a=foo
+> php cli.php Test method a=foo
 ```
 
 ### Code examples
