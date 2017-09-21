@@ -6,7 +6,7 @@ return [
 		// default timezone
 		'timezone' => 'Europe/Lisbon',
 		// Only set this if you need access to route within middleware
-        'determineRouteBeforeAppMiddleware' => false,
+        	'determineRouteBeforeAppMiddleware' => false,
 		// log file path
 		'appLogFilePath' => STORAGE_PATH."logs".DS."app_".date('Ymd').".log",
 		// template folders
