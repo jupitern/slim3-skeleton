@@ -12,6 +12,10 @@ class Session
 		if (session_status() !== PHP_SESSION_ACTIVE) {
 
 			$settings = \Lib\Framework\App::instance()->getConfig('settings.session');
+			
+			if (!is_dir($settings['filesPath'])) {
+				mkdir($settings['filesPath'], 0777, true);
+			}
 
 			$current = session_get_cookie_params();
 			$lifetime = (int)($settings['lifetime'] ?: $current['lifetime']);
