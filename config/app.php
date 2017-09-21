@@ -24,7 +24,7 @@ return [
 			'secure' => false,
 			'httponly' => true,
 			'cache_limiter' => 'nocache',
-			'filesPath' => STORAGE_PATH.'sessions'.DS,
+			'filesPath' => STORAGE_PATH.'sessions',
 		],
 		// storage settings
 		'filesystem' => [
