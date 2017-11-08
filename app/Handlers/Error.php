@@ -4,13 +4,13 @@ namespace App\Handlers;
 
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
-use Psr\Log\LoggerInterface;
+use Monolog\Logger;
 
 final class Error extends \Slim\Handlers\Error
 {
 	protected $logger;
 
-	public function __construct($displayErrorDetails, LoggerInterface $logger = null)
+	public function __construct($displayErrorDetails, Logger $logger = null)
 	{
 		parent::__construct($displayErrorDetails);
 		$this->logger = $logger;
@@ -18,7 +18,6 @@ final class Error extends \Slim\Handlers\Error
 
 	public function __invoke(Request $request, Response $response, \Exception $exception)
 	{
-
 		$app = \Lib\Framework\App::instance();
 
 		// Log the message
@@ -27,14 +26,44 @@ final class Error extends \Slim\Handlers\Error
 		}
 
 		if ($app->console) {
-			return $app->sendResponse("Error: " . $exception->getMessage() . "\n\n" . $exception->getTraceAsString());
+			return $response
+				->withStatus(500)
+				->withHeader('Content-type', 'text/plain')
+				->write("Exception: {$exception->getMessage()} \n\n {$exception->getTraceAsString()}");
 		}
 
-		if (!$this->displayErrorDetails) {
-			$resp = $app->resolve('view')->render('error::500', ['message' => $exception->getMessage()]);
-			return $app->sendResponse($resp, 500);
+		if ($this->determineContentType($request) == 'text/html') {
+			if (!$this->displayErrorDetails) {
+				$resp = $app->resolve('view')->render('error::500', ['message' => $exception->getMessage()]);
+				return $response->withStatus(500)->write($resp);
+			}
+
+			throw $exception;
 		}
 
 		return parent::__invoke($request, $response, $exception);
+	}
+
+
+	protected function renderJsonErrorMessage(\Exception $exception)
+	{
+		$error = ['message' => $exception->getMessage()];
+
+		if ($this->displayErrorDetails) {
+			$error['exception'] = [];
+
+			do {
+				$error['exception'][] = [
+					'type' => get_class($exception),
+					'code' => $exception->getCode(),
+					'message' => $exception->getMessage(),
+					'file' => $exception->getFile(),
+					'line' => $exception->getLine(),
+					'trace' => explode("\n", $exception->getTraceAsString()),
+				];
+			} while ($exception = $exception->getPrevious());
+		}
+
+		return json_encode($error, JSON_PRETTY_PRINT);
 	}
 }

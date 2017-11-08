@@ -7,10 +7,10 @@ class App
 {
 	public $console = false;
 
-	public static $env = self::DEVELOPMENT;
 	const DEVELOPMENT = 'development';
 	const STAGING = 'staging';
 	const PRODUCTION = 'production';
+	public static $env = self::DEVELOPMENT;
 
 	/** @var \Slim\App */
 	private $slim = null;
@@ -167,25 +167,16 @@ class App
 	 * @param mixed $resp
 	 * @return \Psr\Http\Message\ResponseInterface
 	 */
-	public function sendResponse($resp, $statusCode = 200, $contentType = 'text/html')
+	public function sendResponse($resp)
 	{
 		$response = $this->resolve('response');
 
-		if ($this->console) {
-			echo $resp;
+		if ($resp instanceof ResponseInterface) {
+			$response = $resp;
+		}  elseif (is_array($resp) || is_object($resp)) {
+			$response->withJson($resp);
 		} else {
-			if ($resp instanceof ResponseInterface) {
-				$response = $resp;
-			} elseif (is_string($resp) || is_numeric($resp)) {
-				$response
-					->withStatus($statusCode)
-					->withHeader('Content-Type', $contentType)
-					->write($resp);
-			} elseif (is_array($resp) || is_object($resp)) {
-				$response
-					->withStatus($statusCode)
-					->withJson($resp);
-			}
+			$response->write($resp);
 		}
 
 		return $response;

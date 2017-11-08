@@ -26,14 +26,43 @@ final class PhpError extends \Slim\Handlers\PhpError
 		}
 
 		if ($app->console) {
-			$response = $app->sendResponse("Error: " . $error->getMessage() . "\n\n" . $error->getTraceAsString());
+			return $response
+				->withStatus(500)
+				->withHeader('Content-type', 'text/plain')
+				->write("Exception: {$error->getMessage()} \n\n {$error->getTraceAsString()}");
 		}
 
-		if (!$this->displayErrorDetails) {
-			$resp = $app->resolve('view')->render('error::500', ['message' => $error->getMessage()]);
-			return $app->sendResponse($resp, 500);
+		if ($this->determineContentType($request) == 'text/html') {
+			if (!$this->displayErrorDetails) {
+				$resp = $app->resolve('view')->render('error::500', ['message' => $error->getMessage()]);
+				return $response->withStatus(500)->write($resp);
+			}
+
+			throw $error;
 		}
 
 		return parent::__invoke($request, $response, $error);
+	}
+
+	protected function renderJsonErrorMessage(\Exception $exception)
+	{
+		$error = ['message' => $exception->getMessage()];
+
+		if ($this->displayErrorDetails) {
+			$error['exception'] = [];
+
+			do {
+				$error['exception'][] = [
+					'type' => get_class($exception),
+					'code' => $exception->getCode(),
+					'message' => $exception->getMessage(),
+					'file' => $exception->getFile(),
+					'line' => $exception->getLine(),
+					'trace' => explode("\n", $exception->getTraceAsString()),
+				];
+			} while ($exception = $exception->getPrevious());
+		}
+
+		return json_encode($error, JSON_PRETTY_PRINT);
 	}
 }

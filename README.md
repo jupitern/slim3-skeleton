@@ -1,6 +1,6 @@
 # Slim Framework 3 Skeleton Application (http + cli)
 
-Use this skeleton application to quickly setup and start working on a new Slim Framework 3 application (Tested with slim 3.8).
+Use this skeleton application to quickly setup and start working on a new Slim Framework 3 application (Tested with slim 3.9).
 This application handles http and command line requests.
 This application ships with a few service providers and middleware out of the box. All are optional and you can disable them in the config/app.php file
 
@@ -165,14 +165,18 @@ $user = \App\Model\User::find(1);
 echo $user->Name;
 ```
 
-Send a email using PHPMailer service provider
+Send a email using PHPMailer service provider and default settings
 ```php
-$app->resolve('mailer', [
-    ['john_doe@domain.com'], [], [], 'test', 'test', 'teste alt body',
-])->send();
+/* @var $mail \PHPMailer\PHPMailer\PHPMailer */
+$mail = \Lib\Framework\App::instance()->resolve('mailer');
+$mail->addAddress('john.doe@domain.com');
+$mail->Subject = "test";
+$mail->Body    = "<b>test body</b>";
+$mail->AltBody = "alt body";
+$mail->send();
 ```
 
-List a directory content with Flysystem service provider
+List a directory content with Flysystem service provider and default settings 'local'
 ```php
 $filesystem = $app->resolve('filesystem', ['local']);
 var_dump($filesystem->listContents('', true));
