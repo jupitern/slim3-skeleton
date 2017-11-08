@@ -21,11 +21,8 @@ class Plates
 
 		$this->container['view'] = function ($c) use($basePath) {
 			return function($directory = null, $fileExtension = 'php') use($basePath) {
-				$plates = new Engine($directory, $fileExtension);
-				$plates->registerFunction('url', function ($url, $showIndex = null, $includeBaseUrl = true) {
-					return url($url, $showIndex, $includeBaseUrl);
-				});
 
+				$plates = new Engine($directory, $fileExtension);
 				$templatesPath = app()->getConfig('settings.templates');
 				foreach ($templatesPath as $name => $path) {
 					$plates->addFolder($name, $path, true);
