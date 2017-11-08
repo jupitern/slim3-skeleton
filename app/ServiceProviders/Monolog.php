@@ -21,7 +21,7 @@ class Monolog
 		$this->container['logger'] = function($c) {
 			return function($name = null, $logFilePath = null) {
 
-				$app = App::instance();
+				$app = app();
 				if ($name === null) {
 					$name = $app->console ? 'console' : 'app';
 				}

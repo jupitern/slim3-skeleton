@@ -25,16 +25,4 @@ Abstract class Controller
 		$this->view = $view;
 	}
 
-
-	/**
-	 * @param string $url
-	 * @param null $showIndex
-	 * @param bool $includeBaseUrl
-	 * @return string
-	 */
-	protected function url($url = '', $showIndex = null, $includeBaseUrl = true)
-	{
-		return \Lib\Framework\App::instance()->url($url, $showIndex, $includeBaseUrl);
-	}
-
 }

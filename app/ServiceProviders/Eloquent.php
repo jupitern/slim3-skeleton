@@ -16,7 +16,7 @@ class Eloquent
 
 	public function __invoke(ServerRequestInterface $request, ResponseInterface $response, $next)
 	{
-		$settings = \Lib\Framework\App::instance()->getConfig('settings');
+		$settings = app()->getConfig('settings');
 
 		// register connections
 		$capsule = new Capsule;

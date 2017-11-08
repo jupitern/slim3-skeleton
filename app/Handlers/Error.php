@@ -18,7 +18,7 @@ final class Error extends \Slim\Handlers\Error
 
 	public function __invoke(Request $request, Response $response, \Exception $exception)
 	{
-		$app = \Lib\Framework\App::instance();
+		$app = app();
 
 		// Log the message
 		if ($this->logger) {

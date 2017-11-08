@@ -23,10 +23,10 @@ class Plates
 			return function($directory = null, $fileExtension = 'php') use($basePath) {
 				$plates = new Engine($directory, $fileExtension);
 				$plates->registerFunction('url', function ($url, $showIndex = null, $includeBaseUrl = true) {
-					return \Lib\Framework\App::instance()->url($url, $showIndex, $includeBaseUrl);
+					return url($url, $showIndex, $includeBaseUrl);
 				});
 
-				$templatesPath = \Lib\Framework\App::instance()->getConfig('settings.templates');
+				$templatesPath = app()->getConfig('settings.templates');
 				foreach ($templatesPath as $name => $path) {
 					$plates->addFolder($name, $path, true);
 				}

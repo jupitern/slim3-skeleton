@@ -19,7 +19,8 @@
       "psr-4": {
           "App\\": "app/",
           "Lib\\": "lib/"
-      }
+      },
+      "files": ["lib/helpers.php"]
   },
   "suggest": {
   	"respect/validation": "1.1.*",

@@ -11,7 +11,7 @@ class Session
 	{
 		if (session_status() !== PHP_SESSION_ACTIVE) {
 
-			$settings = \Lib\Framework\App::instance()->getConfig('settings.session');
+			$settings = app()->getConfig('settings.session');
 			
 			if (!is_dir($settings['filesPath'])) {
 				mkdir($settings['filesPath'], 0777, true);

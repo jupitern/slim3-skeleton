@@ -35,7 +35,7 @@ if ($console) {
 }
 
 // instance app
-$app = \Lib\Framework\App::instance($settings, $console);
+$app = app($settings, $console);
 // Set up dependencies
 $app->registerProviders();
 // Register middleware

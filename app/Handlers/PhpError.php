@@ -18,7 +18,7 @@ final class PhpError extends \Slim\Handlers\PhpError
 
 	public function __invoke(Request $request, Response $response, \Throwable $error)
 	{
-		$app = \Lib\Framework\App::instance();
+		$app = app();
 
 		// Log the message
 		if ($this->logger) {

@@ -161,7 +161,7 @@ Execute the class:method from command line:
 
 Get application instance
 ```php
-$app = \Lib\Framework\App::instance();
+$app = app()::instance();
 ```
 
 Read a user from db using Laravel Eloquent service provider
@@ -173,7 +173,7 @@ echo $user->Name;
 Send a email using PHPMailer service provider and default settings
 ```php
 /* @var $mail \PHPMailer\PHPMailer\PHPMailer */
-$mail = \Lib\Framework\App::instance()->resolve('mailer');
+$mail = app()->resolve('mailer');
 $mail->addAddress('john.doe@domain.com');
 $mail->Subject = "test";
 $mail->Body    = "<b>test body</b>";
@@ -183,7 +183,7 @@ $mail->send();
 
 List a directory content with Flysystem service provider and default settings 'local'
 ```php
-$filesystem = \Lib\Framework\App::instance()->resolve('filesystem', ['local']);
+$filesystem = app()->resolve('filesystem', ['local']);
 $contents = $filesystem->listContents('', true);
 var_dump($contents);
 ```
