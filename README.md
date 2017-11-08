@@ -46,7 +46,7 @@ Replace `[my-app-name]` with the desired directory name for your new application
 * `public`:     The public directory contains `index.php` file, assets such as images, JavaScript, and CSS
 * `vendor`:     Composer dependencies
 
-### Routing and Dependency injection
+### Routing and dependency injection
 
 The app class has a route resolver method that:
 * matches and injects params into the controller action passed as uri arguments
@@ -159,6 +159,11 @@ Execute the class:method from command line:
 
 ### Code examples
 
+Get application instance
+```php
+$app = \Lib\Framework\App::instance();
+```
+
 Read a user from db using Laravel Eloquent service provider
 ```php
 $user = \App\Model\User::find(1);
@@ -178,14 +183,16 @@ $mail->send();
 
 List a directory content with Flysystem service provider and default settings 'local'
 ```php
-$filesystem = $app->resolve('filesystem', ['local']);
-var_dump($filesystem->listContents('', true));
+$filesystem = \Lib\Framework\App::instance()->resolve('filesystem', ['local']);
+$contents = $filesystem->listContents('', true);
+var_dump($contents);
 ```
 
-Write and read from session using Session service provider
+Write and read from session using Session Helper class
 ```php
 \Lib\Utils\Session::set('user', ['id' => '1']);
-print_r(\Lib\Utils\Session::get('user'));
+user = \Lib\Utils\Session::get('user');
+var_dump($user);
 ```
 
 ## Roadmap
