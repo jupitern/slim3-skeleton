@@ -161,7 +161,9 @@ Execute the class:method from command line:
 
 Get application instance
 ```php
-$app = app()::instance();
+$app = \Lib\Framework\App::instance();
+// or simpler using a helper function
+$app = app();
 ```
 
 Read a user from db using Laravel Eloquent service provider
