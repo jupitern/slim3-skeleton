@@ -183,23 +183,6 @@ class App
 	}
 
 	/**
-	 * debug helper
-	 *
-	 * @return static
-	 */
-	public static function debug($var)
-	{
-		echo '<pre>';
-		if (is_array($var)) {
-			print_r($var);
-		} else {
-			var_dump($var);
-		}
-		echo '</pre>';
-	}
-
-
-	/**
 	 * resolve a dependency from the container
 	 *
 	 * @param string $name
