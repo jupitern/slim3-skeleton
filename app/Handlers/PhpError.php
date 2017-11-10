@@ -44,23 +44,23 @@ final class PhpError extends \Slim\Handlers\PhpError
 		return parent::__invoke($request, $response, $error);
 	}
 
-	protected function renderJsonErrorMessage(\Exception $exception)
+	protected function renderJsonErrorMessage(\Throwable $error)
 	{
-		$error = ['message' => $exception->getMessage()];
+		$error = ['message' => $error->getMessage()];
 
 		if ($this->displayErrorDetails) {
 			$error['exception'] = [];
 
 			do {
 				$error['exception'][] = [
-					'type' => get_class($exception),
-					'code' => $exception->getCode(),
-					'message' => $exception->getMessage(),
-					'file' => $exception->getFile(),
-					'line' => $exception->getLine(),
-					'trace' => explode("\n", $exception->getTraceAsString()),
+					'type' => get_class($error),
+					'code' => $error->getCode(),
+					'message' => $error->getMessage(),
+					'file' => $error->getFile(),
+					'line' => $error->getLine(),
+					'trace' => explode("\n", $error->getTraceAsString()),
 				];
-			} while ($exception = $exception->getPrevious());
+			} while ($error = $error->getPrevious());
 		}
 
 		return json_encode($error, JSON_PRETTY_PRINT);

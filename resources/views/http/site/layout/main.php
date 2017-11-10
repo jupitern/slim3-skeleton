@@ -32,7 +32,7 @@
 	</tr>
 	<tr>
 		<td align="center" style="font-family: 'Oswald', sans-serif; font-size: 55px">
-			<?= $this->section('content') ?>
+			<?= $this->section('content') ?> <br/>
 		</td>
 	</tr>
 	<tr>
