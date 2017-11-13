@@ -192,8 +192,10 @@ var_dump($contents);
 
 Write and read from session using Session Helper class
 ```php
+// save user info in session
 \Lib\Utils\Session::set('user', ['id' => '1']);
-user = \Lib\Utils\Session::get('user');
+// get user info from session
+$user = \Lib\Utils\Session::get('user');
 var_dump($user);
 ```
 
