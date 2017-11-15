@@ -17,11 +17,11 @@ class Cache
 
 	public function __invoke(ServerRequestInterface $request, ResponseInterface $response, $next)
 	{
-		$settings = app()->getConfig('settings');
+		$this->container['cache'] = function ($c) {
+			return function($driver = 'default') {
+				$settings = app()->getConfig('settings.cache');
 
-		$this->container['cache'] = function ($c) use($settings) {
-			return function($driver = 'default') use($settings) {
-				return new Redis(new Client($settings['cache'][$driver]));
+				return new Redis(new Client($settings[$driver]));
 			};
 		};
 

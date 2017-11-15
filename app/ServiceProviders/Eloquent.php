@@ -16,23 +16,24 @@ class Eloquent
 
 	public function __invoke(ServerRequestInterface $request, ResponseInterface $response, $next)
 	{
-		$settings = app()->getConfig('settings');
+		$dbSettings = app()->getConfig('settings.database');
 
 		// register connections
 		$capsule = new Capsule;
-		foreach ($settings['database'] as $name => $configs) {
-			$capsule->addConnection($settings['database'][$name], $name);
+		foreach ($dbSettings as $name => $configs) {
+			$capsule->addConnection($dbSettings[$name], $name);
 		}
 		
         $capsule->setAsGlobal();
         $capsule->bootEloquent();
 
 		$this->container['database'] = function ($c) {
-			return function($name = 'default') {
-				$conn = Capsule::connection($name);
+			return function($driver = 'default') {
+				$conn = Capsule::connection($driver);
 				if ($conn->getConfig('profiling') == true) {
 					$conn->enableQueryLog();
 				}
+				
 				return $conn;
 			};
 		};
