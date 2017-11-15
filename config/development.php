@@ -11,7 +11,7 @@ return [
 			// default db connection settings
 			'default' => [
 				'driver'    => 'mysql',
-				'host'      => '',
+				'host'      => 'localhost',
 				'database'  => '',
 				'username'  => '',
 				'password'  => '',
@@ -22,12 +22,21 @@ return [
 			// sqlsrv config
 //			'default' => array(
 //				'driver' 	=> 'sqlsrv',
-//				'host' 		=> '',
+//				'host' 		=> 'localhost',
 //				'database' 	=> '',
 //				'username' 	=> '',
 //				'password' 	=> '',
 //				'prefix' 	=> '',
 //			),
 		],
+		'cache' => [
+			'default' => [
+				'driver' 	=> 'redis',
+				'scheme' 	=> 'tcp',
+				'host' 		=> 'localhost',
+				'port' 		=> 6379,
+				'database' 	=> 0,
+			]
+		]
 	]
 ];

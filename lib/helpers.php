@@ -28,7 +28,7 @@ function url($url = '', $showIndex = null, $includeBaseUrl = true)
  *
  * @return void
  */
-function debug($var)
+function debug($var, $exit = false)
 {
 	echo '<pre>';
 	if (is_array($var)) {
@@ -37,4 +37,5 @@ function debug($var)
 		var_dump($var);
 	}
 	echo '</pre>';
+	if ($exit) exit();
 }

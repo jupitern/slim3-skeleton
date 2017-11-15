@@ -2,7 +2,8 @@
 
 Use this skeleton application to quickly setup and start working on a new Slim Framework 3 application (Tested with slim 3.9).
 This application handles http and command line requests.
-This application ships with a few service providers and middleware out of the box. All are optional and you can disable them in the config/app.php file
+This application ships with a few service providers and a Session middleware out of the box.
+To remove a service provider just remove it from composer.json, update composer and comment it on config/app.php file.
 
 Available service providers:
 
@@ -12,6 +13,7 @@ Available service providers:
 * Plates
 * Flysystem
 * PHPMailer
+* Cache (redis for now)
 
 Available middleware:
 
@@ -197,6 +199,14 @@ Write and read from session using Session Helper class
 // get user info from session
 $user = \Lib\Utils\Session::get('user');
 var_dump($user);
+```
+
+Write and read from cache (using default driver redis)
+```php
+/** @var \Naroga\RedisCache\Redis $cache */
+$cache = app()->resolve('cache');
+$cache->set("folder:cacheKey", "someTestValue");
+echo $cache->get("folder:cacheKey");
 ```
 
 ## Roadmap
