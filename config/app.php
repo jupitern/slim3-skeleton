@@ -60,17 +60,17 @@ return [
 	// add your service providers here
 	// providers bellow are ALWAYS added
 	'providers' => [
-		'\\App\\ServiceProviders\\Whoops',
-		'\\App\\ServiceProviders\\Monolog',
-		'\\App\\ServiceProviders\\Plates',
-		'\\App\\ServiceProviders\\Eloquent',
-		'\\App\\ServiceProviders\\FileSystem',
-		'\\App\\ServiceProviders\\Mailer',
+		App\ServiceProviders\Whoops::class,
+		App\ServiceProviders\Monolog::class,
+		App\ServiceProviders\Plates::class,
+		App\ServiceProviders\Eloquent::class,
+		App\ServiceProviders\FileSystem::class,
+		App\ServiceProviders\Mailer::class,
 	],
 	// add your middleware here
 	// middleware bellow are called for every route
 	'middleware' => [
-		'\\App\\Middleware\\Session',
+		App\Middleware\Session::class,
 	],
 
 ];

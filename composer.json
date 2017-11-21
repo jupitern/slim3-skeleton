@@ -8,13 +8,15 @@
   "require": {
     "php": ">= 5.6.0",
     "slim/slim": "3.9.*",
-    "filp/whoops": "2.1.*",
     "monolog/monolog": "1.23.*",
     "league/flysystem": "1.0.*",
     "illuminate/database": "5.5.*",
     "phpmailer/phpmailer": "6.0.*",
     "league/plates": "3.3.*",
     "naroga/redis-cache": "1.1.*"
+  },
+  "require-dev": {
+    "filp/whoops": "2.1.*"
   },
   "autoload": {
       "psr-4": {

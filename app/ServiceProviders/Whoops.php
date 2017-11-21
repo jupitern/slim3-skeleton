@@ -17,14 +17,16 @@ class Whoops
 
 	public function __invoke(ServerRequestInterface $request, ResponseInterface $response, $next)
 	{
-		$whoops = new \Whoops\Run;
-		$whoops->allowQuit(false);
-		$handler = new \Whoops\Handler\PrettyPageHandler;
-		$handler->setPageTitle("Whoops! There was a problem.");
-		$whoops->pushHandler($handler);
-		$whoops->register();
+		if (class_exists(\Whoops\Run::class)) {
+			$whoops = new \Whoops\Run;
+			$whoops->allowQuit(false);
+			$handler = new \Whoops\Handler\PrettyPageHandler;
+			$handler->setPageTitle("Whoops! There was a problem.");
+			$whoops->pushHandler($handler);
+			$whoops->register();
 
-		$this->container['whoops'] = $whoops;
+			$this->container['whoops'] = $whoops;
+		}
 
 		return $next($request, $response);
 	}
