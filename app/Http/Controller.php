@@ -6,7 +6,6 @@ use \Psr\Http\Message\ResponseInterface;
 
 Abstract class Controller
 {
-
 	public $request;
 	public $response;
 	public $logger;

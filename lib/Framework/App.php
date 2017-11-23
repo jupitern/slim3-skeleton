@@ -140,7 +140,7 @@ class App
 	public function __call($fn, $args = [])
 	{
 		if (method_exists($this->slim, $fn)) {
-			return call_user_func_array([$this->slim,$fn], $args);
+			return call_user_func_array([$this->slim, $fn], $args);
 		}
 		throw new \Exception('Method not found :: '.$fn);
 	}
