@@ -3,6 +3,7 @@
 Use this skeleton application to quickly setup and start working on a new Slim Framework 3 application (Tested with slim 3.9).
 This application handles http and command line requests.
 This application ships with a few service providers and a Session middleware out of the box.
+Supports container resolution and auto-wiring.
 To remove a service provider just remove it from composer.json, update composer and comment it on config/app.php file.
 
 Available service providers:
@@ -72,48 +73,59 @@ $app->get('/hello/{name}', function (Request $request, Response $response, $args
 });
 
 
-// example route to resolve request to uri '/' to \\App\\Http\\Site\\Welcome::index
+// example route to resolve request to uri '/' to \App\Http\Site\Welcome::index
 $app->any('/', function ($request, $response, $args) use($app) {
-	return $app->resolveRoute("\\App\\Http\\Site", "Welcome", "index", $args);
+	return $app->resolveRoute('\App\Http\Site', "Welcome", "index", $args);
 });
 
 
-// example using container resolution and automatic resolution
-// resolves to a class:method under the namespace \\App\\Http\\Site
+// example using container resolution and automatic resolution (auto-wiring)
+// resolves to a class:method under the namespace \App\Http\Site
 // injects the :id param value into the method $id parameter
-// injects
+
+// route definition
 $app->any('/{class}/{method}[/{id:[0-9]+}]', function ($request, $response, $args) use($app) {
-	return $app->resolveRoute("\\App\\Http\\Site", $args['class'], $args['method'], $args);
+	return $app->resolveRoute('\App\Http\Site', $args['class'], $args['method'], $args);
 });
 
+// Controller Welcome definition
 namespace App\Http\Site;
 use \App\Http\Controller;
 
 class Welcome extends Controller
 {
-	public function index($id, $request, )
+	public function index($id, \Psr\Log\LoggerInterface $logger, \App\Model\User $user)
 	{
+	    $logger->info("logging a message using logger resolved from container");
+
+        $logger->info("getting a eloquent user model attributes using automatic resolution (auto-wiring)");
+	    debug($user->getAttributes()); // helper method debug
+
+        // return response as string. resolveRoute method will handle it and output the response
 	    return "id = {$id}";
 	}
 }
 
 
 // example calling http://localhost:8080/index.php/app/test/method/1 with the route bellow
-// resolves to a class:method under the namespace \\App\\Http\\App and
+// resolves to a class:method under the namespace \App\Http\App and
 // injects the :id param value into the method $id parameter
-// Other parameters in the method will be searched in the container using parameter name as key
+// Other parameters in the method will be searched in the container or automatically resolved
+
+// route definition
 $app->any('/app/{class}/{method}[/{id:[0-9]+}]', function ($request, $response, $args) use($app) {
-	return $app->resolveRoute("\\App\\Http\\App", $args['class'], $args['method'], $args);
+	return $app->resolveRoute('\App\Http\App', $args['class'], $args['method'], $args);
 });
 
 namespace App\Http\App;
 use \App\Http\Controller;
 
+// Controller Test definition
 class Test extends Controller
 {
-	public function method($id, $request, \App\Model\User $user)
+	public function method($id, \App\Model\User $user)
 	{
-	    return get_class($request)."<br/>".get_class($user)."<br/>id = {$id}";
+	    return get_class($user)."<br/>id = {$id}";
 	}
 }
 
@@ -168,6 +180,14 @@ $app = \Lib\Framework\App::instance();
 $app = app();
 ```
 
+Debug a variable, array or object using a debug helper
+```php
+debug(['a', 'b', 'c']);
+// or debug and exit passing true as second param
+debug(['a', 'b', 'c'], true);
+```
+
+
 Read a user from db using Laravel Eloquent service provider
 ```php
 $user = \App\Model\User::find(1);
@@ -177,7 +197,7 @@ echo $user->Name;
 Send a email using PHPMailer service provider and default settings
 ```php
 /* @var $mail \PHPMailer\PHPMailer\PHPMailer */
-$mail = app()->resolve('mailer');
+$mail = app()->resolve(\PHPMailer\PHPMailer\PHPMailer::class);
 $mail->addAddress('john.doe@domain.com');
 $mail->Subject = "test";
 $mail->Body    = "<b>test body</b>";
@@ -187,7 +207,7 @@ $mail->send();
 
 List a directory content with Flysystem service provider and default settings 'local'
 ```php
-$filesystem = app()->resolve('filesystem', ['local']);
+$filesystem = app()->resolve(\League\Flysystem\FilesystemInterface::class, ['local']);
 $contents = $filesystem->listContents('', true);
 var_dump($contents);
 ```
@@ -204,9 +224,9 @@ var_dump($user);
 Write and read from cache (using default driver redis)
 ```php
 /** @var \Naroga\RedisCache\Redis $cache */
-$cache = app()->resolve('cache');
-$cache->set("folder:cacheKey", "someTestValue");
-echo $cache->get("folder:cacheKey");
+$cache = app()->resolve(Psr\SimpleCache\CacheInterface::class);
+$cache->set("cacheKey", "some test value");
+echo $cache->get("cacheKey");
 ```
 
 ## Roadmap
