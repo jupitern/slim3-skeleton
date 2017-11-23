@@ -6,6 +6,7 @@ use Psr\Http\Message\ResponseInterface;
 use League\Flysystem\Filesystem as FlySystem;
 use League\Flysystem\Adapter\Local;
 use League\Flysystem\Adapter\Ftp as FtpAdapter;
+use League\Flysystem\FilesystemInterface;
 
 
 class FileSystem
@@ -13,7 +14,7 @@ class FileSystem
 
 	public function __invoke(ServerRequestInterface $request, ResponseInterface $response, $next)
 	{
-		app()->getContainer()[\League\Flysystem\Filesystem::class] = function ($c) {
+		app()->getContainer()[FilesystemInterface::class] = function ($c) {
 			return function($configName = 'local', $configsOverride = []) {
 
 				$defaultConfigs = app()->getConfig("settings.filesystem.{$configName}");

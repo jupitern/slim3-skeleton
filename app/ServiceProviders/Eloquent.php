@@ -4,7 +4,7 @@ namespace App\ServiceProviders;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Illuminate\Database\Capsule\Manager as Capsule;
-use Illuminate\Database;
+use Illuminate\Database\ConnectionInterface;
 
 class Eloquent
 {
@@ -22,7 +22,7 @@ class Eloquent
         $capsule->setAsGlobal();
         $capsule->bootEloquent();
 
-		app()->getContainer()[Capsule::class] = function ($c) {
+		app()->getContainer()[ConnectionInterface::class] = function ($c) {
 			return function($driver = 'default') {
 				$conn = Capsule::connection($driver);
 				if ($conn->getConfig('profiling') == true) {
