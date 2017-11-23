@@ -7,18 +7,14 @@ use Psr\Http\Message\ResponseInterface;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\ChromePHPHandler;
+use Psr\Log\LoggerInterface;
 
 class Monolog
 {
-	private $container;
-
-	public function __construct($container) {
-		$this->container = $container;
-    }
 
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, $next)
     {
-		$this->container['logger'] = function($c) {
+		app()->getContainer()[LoggerInterface::class] = function($c) {
 			return function($name = null, $logFilePath = null) {
 
 				$app = app();

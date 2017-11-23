@@ -2,6 +2,7 @@
 
 namespace Lib\Framework;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Log\LoggerInterface;
 
 class App
 {
@@ -37,13 +38,13 @@ class App
 		$loggerName = $this->console ? 'console' : 'app';
 
 		$this->getContainer()['errorHandler'] = function($c) use($loggerName, $displayErrorDetails) {
-			return new \App\Handlers\Error($displayErrorDetails, $this->resolve('logger'));
+			return new \App\Handlers\Error($displayErrorDetails, $this->resolve(LoggerInterface::class));
 		};
 		$this->getContainer()['phpErrorHandler'] = function($c) use($loggerName, $displayErrorDetails) {
-			return new \App\Handlers\PhpError($displayErrorDetails, $this->resolve('logger'));
+			return new \App\Handlers\PhpError($displayErrorDetails, $this->resolve(LoggerInterface::class));
 		};
 		$this->getContainer()['notFoundHandler'] = function($c) use($loggerName, $displayErrorDetails) {
-			return new \App\Handlers\NotFound($this->resolve('logger'));
+			return new \App\Handlers\NotFound($this->resolve(LoggerInterface::class));
 		};
 	}
 
@@ -117,13 +118,16 @@ class App
 		}
 	}
 
-	//proxy calls to slim
-	public function __call($fn, $args=[])
+
+	//proxy all gets to slim
+	public function __get($name)
 	{
-		if (method_exists($this->slim,$fn)) {
-			return call_user_func_array([$this->slim,$fn] , $args);
+		$c = $this->getContainer();
+
+		if ($c->has($name)) {
+			return $c->get($name);
 		}
-		throw new \Exception('Method not found :: '.$fn);
+		return $this->resolve($name);
 	}
 
 	//proxy all sets to slim
@@ -132,11 +136,15 @@ class App
 		$this->slim->{$k} = $v;
 	}
 
-	//proxy all gets to slim __get($k)
-	public function __get($k)
+	// proxy calls to slim
+	public function __call($fn, $args=[])
 	{
-		return $this->slim->{$k};
+		if (method_exists($this->slim,$fn)) {
+			return call_user_func_array([$this->slim,$fn] , $args);
+		}
+		throw new \Exception('Method not found :: '.$fn);
 	}
+
 
 	/**
 	 * generate a url
@@ -182,39 +190,6 @@ class App
 		return $response;
 	}
 
-	/**
-	 * resolve a dependency from the container
-	 *
-	 * @param string $name
-	 * @param string $params
-	 * @param mixed
-	 */
-	public function resolve($name, $params = [])
-	{
-		$container = $this->getContainer();
-
-		if ($container->has($name)) {
-			return is_callable($container[$name]) ? call_user_func_array($container[$name], $params) : $container[$name];
-		}
-
-		if (class_exists($name)) {
-			$reflector = new \ReflectionClass($name);
-
-			if ($reflector->isInstantiable()) {
-				$constructor = $reflector->getConstructor();
-
-				if ($constructor === null) {
-					return new $name;
-				} else {
-					$dependencies = $this->resolveDependencies($constructor->getParameters(), $params);
-					return $reflector->newInstanceArgs($dependencies);
-				}
-			}
-		}
-
-		return null;
-	}
-
 
 	/**
 	 * resolve and call a given class / method
@@ -225,7 +200,7 @@ class App
 	 * @param array $requestParams
 	 * @return \Psr\Http\Message\ResponseInterface
 	 */
-	public function resolveRoute($namespace = "\\App\\Http", $className, $methodName, $requestParams = [])
+	public function resolveRoute($namespace = '\App\Http', $className, $methodName, $requestParams = [])
 	{
 		$class = new \ReflectionClass($namespace.'\\'.$className);
 
@@ -234,12 +209,50 @@ class App
 			return $handler($this->getContainer()['request'], $this->getContainer()['response']);
 		}
 
+		$constructorArgs = $this->resolveMethodDependencies($class->getConstructor());
+
 		$method = $class->getMethod($methodName);
-		$constructorArgs = $this->resolveDependencies($class->getConstructor()->getParameters());
-		$methodArgs = $this->resolveDependencies($method->getParameters(), $requestParams);
-		$ret = $method->invokeArgs($class->newInstanceArgs($constructorArgs), $methodArgs);
+		$ret = $method->invokeArgs(
+			$class->newInstanceArgs($constructorArgs),
+			$this->resolveMethodDependencies($method, $requestParams)
+		);
 
 		return $this->sendResponse($ret);
+	}
+
+
+	/**
+	 * resolve a dependency from the container
+	 *
+	 * @param string $name
+	 * @param string $params
+	 * @param mixed
+	 */
+	public function resolve($name, $params = [])
+	{
+		//echo "auto-resolving {$name}<br/>";
+
+		$c = $this->getContainer();
+		if ($c->has($name)) {
+			return is_callable($c[$name]) ? call_user_func_array($c[$name], $params) : $c[$name];
+		}
+
+		if (!class_exists($name)) {
+			throw new \ReflectionException("Unable to resolve {$name}");
+		}
+
+		$reflector = new \ReflectionClass($name);
+
+		if (!$reflector->isInstantiable()) {
+			throw new \ReflectionException("Class {$name} is not instantiable");
+		}
+
+		if ($constructor = $reflector->getConstructor()) {
+			$dependencies = $this->resolveMethodDependencies($constructor);
+			return $reflector->newInstanceArgs($dependencies);
+		}
+
+		return new $name();
 	}
 
 
@@ -250,29 +263,40 @@ class App
 	 * @param array $values
 	 * @return array
 	 */
-	private function resolveDependencies(array $params = [], array $values = [])
+	private function resolveMethodDependencies(\ReflectionMethod $method, $urlParams = [])
 	{
-		$dependencies = [];
-		foreach ($params as $param) {
+		return array_map(function ($dependency) use($urlParams) {
+			return $this->resolveDependency($dependency, $urlParams);
+		}, $method->getParameters());
+	}
 
-			if (array_key_exists($param->getName(), $values)) {
-				$dependencies[] = $values[$param->getName()];
-			} else {
-				$dependencyName = !empty($param->getClass()) ? $param->getClass()->getName() : $param->getName();
 
-				$dependency = $this->resolve($dependencyName, $values);
+	/**
+	 * resolve a dependency parameter
+	 *
+	 * @param \ReflectionParameter $param
+	 * @return mixed
+	 */
+	private function resolveDependency(\ReflectionParameter $param, $urlParams = [])
+	{
+//		echo "revolve param {$param->getName()}<br/>";
 
-				if ($dependency !== null) {
-					$dependencies[] = $dependency;
-				} elseif ($param->isDefaultValueAvailable()) {
-					$dependencies[] = $param->getDefaultValue();
-				} else {
-					throw new \Exception("Error resolving method dependencies for param {$param->getName()}");
-				}
-			}
+		// for controller method para injection from $_GET
+		if (count($urlParams) && array_key_exists($param->name, $urlParams)) {
+			return $urlParams[$param->name];
 		}
 
-		return $dependencies;
+		// param is instantiable
+		if ($param->isDefaultValueAvailable()) {
+			return $param->getDefaultValue();
+		}
+
+		if (!$param->getClass()) {
+			throw new \ReflectionException("Unable to resolve method param {$param->name}");
+		}
+
+		// try to resolve from container
+		return $this->resolve($param->getClass()->name);
 	}
 
 }

@@ -5,6 +5,7 @@ namespace App\Handlers;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use Monolog\Logger;
+use League\Plates\Engine;
 
 final class Error extends \Slim\Handlers\Error
 {
@@ -34,7 +35,7 @@ final class Error extends \Slim\Handlers\Error
 
 		if ($this->determineContentType($request) == 'text/html') {
 			if (!$this->displayErrorDetails) {
-				$resp = $app->resolve('view')->render('error::500', ['message' => $exception->getMessage()]);
+				$resp = $app->resolve(Engine::class)->render('error::500', ['message' => $exception->getMessage()]);
 				return $response->withStatus(500)->write($resp);
 			}
 

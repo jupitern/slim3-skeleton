@@ -8,12 +8,6 @@ use Whoops\Handler\JsonResponseHandler;
 
 class Whoops
 {
-	private $container;
-
-	public function __construct($container)
-	{
-		$this->container = $container;
-	}
 
 	public function __invoke(ServerRequestInterface $request, ResponseInterface $response, $next)
 	{
@@ -25,7 +19,7 @@ class Whoops
 			$whoops->pushHandler($handler);
 			$whoops->register();
 
-			$this->container['whoops'] = $whoops;
+			app()->getContainer()[\Whoops\Run::class] = $whoops;
 		}
 
 		return $next($request, $response);

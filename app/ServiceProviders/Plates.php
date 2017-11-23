@@ -8,18 +8,12 @@ use League\Plates\Extension\URI;
 
 class Plates
 {
-	private $container;
-
-	public function __construct($container)
-	{
-		$this->container = $container;
-	}
 
 	public function __invoke(ServerRequestInterface $request, ResponseInterface $response, $next)
 	{
 		$basePath = $request->getUri()->getBasePath();
 
-		$this->container['view'] = function ($c) use($basePath) {
+		app()->getContainer()[Engine::class] = function ($c) use($basePath) {
 			return function($directory = null, $fileExtension = 'php') use($basePath) {
 
 				$plates = new Engine($directory, $fileExtension);

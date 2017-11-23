@@ -8,11 +8,6 @@ use Illuminate\Database;
 
 class Eloquent
 {
-	private $container;
-
-	public function __construct($container) {
-		$this->container = $container;
-	}
 
 	public function __invoke(ServerRequestInterface $request, ResponseInterface $response, $next)
 	{
@@ -27,7 +22,7 @@ class Eloquent
         $capsule->setAsGlobal();
         $capsule->bootEloquent();
 
-		$this->container['database'] = function ($c) {
+		app()->getContainer()[Capsule::class] = function ($c) {
 			return function($driver = 'default') {
 				$conn = Capsule::connection($driver);
 				if ($conn->getConfig('profiling') == true) {

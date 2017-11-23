@@ -6,7 +6,7 @@ return [
 		// default timezone
 		'timezone' => 'Europe/Lisbon',
 		// Only set this if you need access to route within middleware
-        	'determineRouteBeforeAppMiddleware' => false,
+        'determineRouteBeforeAppMiddleware' => false,
 		// log file path
 		'appLogFilePath' => STORAGE_PATH."logs".DS."app_".date('Ymd').".log",
 		// template folders
@@ -66,6 +66,7 @@ return [
 		App\ServiceProviders\Eloquent::class,
 		App\ServiceProviders\FileSystem::class,
 		App\ServiceProviders\Mailer::class,
+		App\ServiceProviders\Cache::class,
 	],
 	// add your middleware here
 	// middleware bellow are called for every route

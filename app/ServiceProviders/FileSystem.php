@@ -10,15 +10,10 @@ use League\Flysystem\Adapter\Ftp as FtpAdapter;
 
 class FileSystem
 {
-	private $container;
-
-	public function __construct($container) {
-		$this->container = $container;
-	}
 
 	public function __invoke(ServerRequestInterface $request, ResponseInterface $response, $next)
 	{
-		$this->container['filesystem'] = function ($c) {
+		app()->getContainer()[\League\Flysystem\Filesystem::class] = function ($c) {
 			return function($configName = 'local', $configsOverride = []) {
 
 				$defaultConfigs = app()->getConfig("settings.filesystem.{$configName}");

@@ -1,7 +1,8 @@
 <?php
 
 namespace App\Http;
-
+use \Psr\Http\Message\ServerRequestInterface;
+use \Psr\Http\Message\ResponseInterface;
 
 Abstract class Controller
 {
@@ -12,17 +13,15 @@ Abstract class Controller
 	public $view;
 
 	/**
-	 * @param \Psr\Http\Message\ServerRequestInterface $request
-	 * @param \Psr\Http\Message\ResponseInterface $response
 	 * @param \League\Plates\Engine $view
 	 * @param \Psr\Log\LoggerInterface $logger
 	 */
-	public function __construct($request, $response, $view, $logger = null)
+	public function __construct(\League\Plates\Engine $view, \Psr\Log\LoggerInterface $logger)
 	{
-		$this->request = $request;
-		$this->response = $response;
-		$this->logger = $logger;
+		$this->request = app()->resolve('request');
+		$this->response = app()->resolve('response');
 		$this->view = $view;
+		$this->logger = $logger;
 	}
 
 }

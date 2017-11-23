@@ -7,16 +7,10 @@ use PHPMailer\PHPMailer\PHPMailer;
 
 class Mailer
 {
-	private $container;
-
-	public function __construct($container)
-	{
-		$this->container = $container;
-	}
 
 	public function __invoke(ServerRequestInterface $request, ResponseInterface $response, $next)
 	{
-		$this->container['mailer'] = function ($c) {
+		app()->getContainer()[PHPMailer::class] = function ($c) {
 			return function($configName = 'default', $configsOverride = []) {
 
 				$defaultConfigs = app()->getConfig("settings.mail.{$configName}");

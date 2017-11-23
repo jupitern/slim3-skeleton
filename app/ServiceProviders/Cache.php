@@ -5,19 +5,14 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Naroga\RedisCache\Redis;
 use Predis\Client;
+use Psr\SimpleCache\CacheInterface;
 
 class Cache
 {
-	private $container;
-
-	public function __construct($container)
-	{
-		$this->container = $container;
-	}
 
 	public function __invoke(ServerRequestInterface $request, ResponseInterface $response, $next)
 	{
-		$this->container['cache'] = function ($c) {
+		app()->getContainer()[CacheInterface::class] = function ($c) {
 			return function($driver = 'default') {
 				$settings = app()->getConfig('settings.cache');
 
