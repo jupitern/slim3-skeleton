@@ -137,10 +137,10 @@ class App
 	}
 
 	// proxy calls to slim
-	public function __call($fn, $args=[])
+	public function __call($fn, $args = [])
 	{
-		if (method_exists($this->slim,$fn)) {
-			return call_user_func_array([$this->slim,$fn] , $args);
+		if (method_exists($this->slim, $fn)) {
+			return call_user_func_array([$this->slim,$fn], $args);
 		}
 		throw new \Exception('Method not found :: '.$fn);
 	}
@@ -257,10 +257,10 @@ class App
 
 
 	/**
-	 * resolve a list of dependencies for a given method parameters
+	 * resolve dependencies for a given class method
 	 *
-	 * @param array $params
-	 * @param array $values
+	 * @param \ReflectionMethod $method
+	 * @param array $urlParams
 	 * @return array
 	 */
 	private function resolveMethodDependencies(\ReflectionMethod $method, $urlParams = [])
