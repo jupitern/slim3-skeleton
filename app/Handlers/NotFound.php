@@ -9,20 +9,15 @@ use League\Plates\Engine;
 
 final class NotFound extends \Slim\Handlers\NotFound
 {
-	protected $logger;
-
-	public function __construct(Logger $logger = null)
-	{
-		$this->logger = $logger;
-	}
 
 	public function __invoke(Request $request, Response $response)
 	{
 		$app = app();
+		$container = $app->getContainer();
 
 		// Log the message
-		if ($this->logger) {
-			$this->logger->error("URI '".$request->getUri()->getPath()."' not found");
+		if ($container->has(LoggerInterface::class)) {
+			$app->resolve(LoggerInterface::class)->error("URI '".$request->getUri()->getPath()."' not found");
 		}
 
 		if ($app->console) {
@@ -32,7 +27,7 @@ final class NotFound extends \Slim\Handlers\NotFound
 		$resp = $app->resolve(Engine::class)->render('error::404');
 		$response->withStatus(404)->write($resp);
 
-		return parent::__invoke($request, $response);
+		return $response;
 	}
 
 

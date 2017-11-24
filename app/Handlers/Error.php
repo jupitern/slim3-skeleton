@@ -4,26 +4,20 @@ namespace App\Handlers;
 
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
-use Monolog\Logger;
+use Psr\Log\LoggerInterface;
 use League\Plates\Engine;
 
 final class Error extends \Slim\Handlers\Error
 {
-	protected $logger;
-
-	public function __construct($displayErrorDetails, Logger $logger = null)
-	{
-		parent::__construct($displayErrorDetails);
-		$this->logger = $logger;
-	}
 
 	public function __invoke(Request $request, Response $response, \Exception $exception)
 	{
 		$app = app();
+		$container = $app->getContainer();
 
 		// Log the message
-		if ($this->logger) {
-			$this->logger->error($exception->getMessage()."\n".$exception->getTraceAsString());
+		if ($container->has(LoggerInterface::class)) {
+			$app->resolve(LoggerInterface::class)->error($exception->getMessage()."\n".$exception->getTraceAsString());
 		}
 
 		if ($app->console) {

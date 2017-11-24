@@ -1,8 +1,11 @@
 <?php
 
 namespace Lib\Framework;
+use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Log\LoggerInterface;
+use App\Handlers\Error;
+use App\Handlers\PhpError;
+use App\Handlers\NotFound;
 
 class App
 {
@@ -19,7 +22,11 @@ class App
 	private static $instance = null;
 
 
-	protected function __construct($settings, $console = false)
+	/**
+	 * @param array $settings
+	 * @param boolean $console
+	 */
+	protected function __construct($settings = [], $console = false)
 	{
 		$this->settings = $settings;
 		$this->console = $console;
@@ -36,25 +43,25 @@ class App
 			throw new \ErrorException($errstr, $errno, 0, $errfile, $errline);
 		});
 
-		$loggerName = $this->console ? 'console' : 'app';
+		$container[RequestInterface::class] = $container['request'];
+		$container[ResponseInterface::class] = $container['response'];
 
-		$container[\Psr\Http\Message\RequestInterface::class] = $container['request'];
-		$container[\Psr\Http\Message\ResponseInterface::class] = $container['response'];
-
-		$container['errorHandler'] = function($c) use($loggerName, $displayErrorDetails) {
-			return new \App\Handlers\Error($displayErrorDetails, $this->resolve(LoggerInterface::class));
+		$container['errorHandler'] = function() use($displayErrorDetails) {
+			return new Error($displayErrorDetails);
 		};
-		$container['phpErrorHandler'] = function($c) use($loggerName, $displayErrorDetails) {
-			return new \App\Handlers\PhpError($displayErrorDetails, $this->resolve(LoggerInterface::class));
+		$container['phpErrorHandler'] = function() use($displayErrorDetails) {
+			return new PhpError($displayErrorDetails);
 		};
-		$container['notFoundHandler'] = function($c) use($loggerName, $displayErrorDetails) {
-			return new \App\Handlers\NotFound($this->resolve(LoggerInterface::class));
+		$container['notFoundHandler'] = function() use($displayErrorDetails) {
+			return new NotFound();
 		};
 	}
 
 	/**
 	 * Application Singleton Factory
 	 *
+	 * @param array $settings
+	 * @param boolean $console
 	 * @return static
 	 */
 	final public static function instance($settings = [], $console = false)
@@ -104,6 +111,8 @@ class App
 
 	/**
 	 * register providers
+	 *
+	 * @return void
 	 */
 	public function registerProviders()
 	{
@@ -114,6 +123,8 @@ class App
 
 	/**
 	 * register providers
+	 *
+	 * @return void
 	 */
 	public function registerMiddleware()
 	{
@@ -206,9 +217,14 @@ class App
 	 */
 	public function resolveRoute($namespace = '\App\Http', $className, $methodName, $requestParams = [])
 	{
-		$class = new \ReflectionClass($namespace.'\\'.$className);
+		try {
+			$class = new \ReflectionClass($namespace.'\\'.$className);
 
-		if (!$class->isInstantiable() || !$class->hasMethod($methodName)) {
+			if (!$class->isInstantiable() || !$class->hasMethod($methodName)) {
+				throw new \ReflectionException("route class is not instantiable or method does not exist");
+			}
+		}
+		catch (\ReflectionException $e) {
 			$handler = $this->getContainer()['notFoundHandler'];
 			return $handler($this->getContainer()['request'], $this->getContainer()['response']);
 		}
@@ -228,9 +244,11 @@ class App
 	/**
 	 * resolve a dependency from the container
 	 *
+	 * @throws \ReflectionException
 	 * @param string $name
-	 * @param string $params
+	 * @param array $params
 	 * @param mixed
+	 * @return mixed
 	 */
 	public function resolve($name, $params = [])
 	{
@@ -278,7 +296,9 @@ class App
 	/**
 	 * resolve a dependency parameter
 	 *
+	 * @throws \ReflectionException
 	 * @param \ReflectionParameter $param
+	 * @param array $urlParams
 	 * @return mixed
 	 */
 	private function resolveDependency(\ReflectionParameter $param, $urlParams = [])
