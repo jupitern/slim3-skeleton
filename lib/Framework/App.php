@@ -223,8 +223,7 @@ class App
 			if (!$class->isInstantiable() || !$class->hasMethod($methodName)) {
 				throw new \ReflectionException("route class is not instantiable or method does not exist");
 			}
-		}
-		catch (\ReflectionException $e) {
+		} catch (\ReflectionException $e) {
 			$handler = $this->getContainer()['notFoundHandler'];
 			return $handler($this->getContainer()['request'], $this->getContainer()['response']);
 		}
