@@ -24,6 +24,7 @@ class App
 		$this->settings = $settings;
 		$this->console = $console;
 		$this->slim = new \Slim\App($settings);
+		$container = $this->getContainer();
 		$displayErrorDetails = $settings['settings']['debug'];
 
 		date_default_timezone_set($settings['settings']['timezone']);
@@ -37,13 +38,16 @@ class App
 
 		$loggerName = $this->console ? 'console' : 'app';
 
-		$this->getContainer()['errorHandler'] = function($c) use($loggerName, $displayErrorDetails) {
+		$container[\Psr\Http\Message\RequestInterface::class] = $container['request'];
+		$container[\Psr\Http\Message\ResponseInterface::class] = $container['response'];
+
+		$container['errorHandler'] = function($c) use($loggerName, $displayErrorDetails) {
 			return new \App\Handlers\Error($displayErrorDetails, $this->resolve(LoggerInterface::class));
 		};
-		$this->getContainer()['phpErrorHandler'] = function($c) use($loggerName, $displayErrorDetails) {
+		$container['phpErrorHandler'] = function($c) use($loggerName, $displayErrorDetails) {
 			return new \App\Handlers\PhpError($displayErrorDetails, $this->resolve(LoggerInterface::class));
 		};
-		$this->getContainer()['notFoundHandler'] = function($c) use($loggerName, $displayErrorDetails) {
+		$container['notFoundHandler'] = function($c) use($loggerName, $displayErrorDetails) {
 			return new \App\Handlers\NotFound($this->resolve(LoggerInterface::class));
 		};
 	}
