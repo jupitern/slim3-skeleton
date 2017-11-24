@@ -196,7 +196,7 @@ class App
 
 		if ($resp instanceof ResponseInterface) {
 			$response = $resp;
-		}  elseif (is_array($resp) || is_object($resp)) {
+		} elseif (is_array($resp) || is_object($resp)) {
 			$response->withJson($resp);
 		} else {
 			$response->write($resp);
