@@ -98,7 +98,7 @@ class Welcome extends Controller
 	{
 	    $logger->info("logging a message using logger resolved from container");
 
-        $logger->info("getting a eloquent user model attributes using automatic resolution (auto-wiring)");
+	    $logger->info("getting a eloquent user model attributes using automatic resolution (auto-wiring)");
 	    debug($user->getAttributes()); // helper method debug
 
         // return response as string. resolveRoute method will handle it and output the response

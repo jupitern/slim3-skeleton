@@ -1,16 +1,16 @@
 <?php
 
 namespace App\Console;
+use League\Plates\Engine;
+use Psr\Log\LoggerInterface;
 
 Abstract class Command
 {
 
-	/** @var \Psr\Log\LoggerInterface */
 	public $logger;
-	/** @var \League\Plates\Engine */
 	public $view;
 
-	public function __construct($view, $logger = null)
+	public function __construct(Engine $view, LoggerInterface $logger)
 	{
 		$this->logger = $logger;
 		$this->view = $view;
