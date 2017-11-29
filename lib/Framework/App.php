@@ -229,12 +229,12 @@ class App
 		}
 
 		$constructorArgs = $this->resolveMethodDependencies($class->getConstructor());
+		$controller = $class->newInstanceArgs($constructorArgs);
 
 		$method = $class->getMethod($methodName);
-		$ret = $method->invokeArgs(
-			$class->newInstanceArgs($constructorArgs),
-			$this->resolveMethodDependencies($method, $requestParams)
-		);
+		$args = $this->resolveMethodDependencies($method, $requestParams);
+
+		$ret = $method->invokeArgs($controller, $args);
 
 		return $this->sendResponse($ret);
 	}
@@ -251,8 +251,6 @@ class App
 	 */
 	public function resolve($name, $params = [])
 	{
-		//echo "auto-resolving {$name}<br/>";
-
 		$c = $this->getContainer();
 		if ($c->has($name)) {
 			return is_callable($c[$name]) ? call_user_func_array($c[$name], $params) : $c[$name];
@@ -302,8 +300,6 @@ class App
 	 */
 	private function resolveDependency(\ReflectionParameter $param, $urlParams = [])
 	{
-//		echo "revolve param {$param->getName()}<br/>";
-
 		// for controller method para injection from $_GET
 		if (count($urlParams) && array_key_exists($param->name, $urlParams)) {
 			return $urlParams[$param->name];

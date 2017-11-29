@@ -6,13 +6,13 @@ use \App\Http\Controller;
 class Welcome extends Controller
 {
 
-	public function index($id='')
+	public function index()
 	{
 		// log some message
-		$this->logger->info("logging a message");
+		$this->logger->info("log a message");
 
 		// sending a response
-		return $this->view->render('site::test/welcome', ['name' => $id]);
+		return $this->view->render('site::test/welcome');
 	}
 
 }

@@ -17,7 +17,7 @@ final class Error extends \Slim\Handlers\Error
 
 		// Log the message
 		if ($container->has(LoggerInterface::class)) {
-			$app->resolve(LoggerInterface::class)->error($exception->getMessage()."\n".$exception->getTraceAsString());
+			$app->resolve(LoggerInterface::class)->error($exception);
 		}
 
 		if ($app->console) {

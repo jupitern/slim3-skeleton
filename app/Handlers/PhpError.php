@@ -17,7 +17,7 @@ final class PhpError extends \Slim\Handlers\PhpError
 
 		// Log the message
 		if ($container->has(LoggerInterface::class)) {
-			$app->resolve(LoggerInterface::class)->critical($error->getMessage()."\n".$error->getTraceAsString());
+			$app->resolve(LoggerInterface::class)->critical($error);
 		}
 
 		if ($app->console) {

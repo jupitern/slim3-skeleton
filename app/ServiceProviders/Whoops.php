@@ -16,7 +16,6 @@ class Whoops
 			$whoops = new Run;
 			$whoops->allowQuit(false);
 			$handler = new PrettyPageHandler;
-			$handler->setPageTitle("Whoops! There was a problem.");
 			$whoops->pushHandler($handler);
 			$whoops->register();
 
