@@ -24,7 +24,7 @@ class Monolog
 			$appLogger = $this->newLogger($logFilePath, $appLoggerName);
 		}
 
-		app()->getContainer()[LoggerInterface::class] = function($c) use($appLogger, $appLoggerName) {
+		$app->getContainer()[LoggerInterface::class] = function($c) use($appLogger, $appLoggerName) {
 			return function($logFilePath = null, $name = null, $level = LogLevel::DEBUG) use($appLogger, $appLoggerName) {
 
 				if ($name == null) {
