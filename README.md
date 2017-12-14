@@ -4,7 +4,8 @@ Use this skeleton application to quickly setup and start working on a new Slim F
 This application handles http and command line requests.
 This application ships with a few service providers and a Session middleware out of the box.
 Supports container resolution and auto-wiring.
-To remove a service provider just remove it from composer.json, update composer and comment it on config/app.php file.
+
+To remove a service provider comment it on config/app.php file and remove it from composer.json, update composer.
 
 Available service providers:
 
@@ -224,7 +225,7 @@ var_dump($user);
 Write and read from cache (using default driver redis)
 ```php
 /** @var \Naroga\RedisCache\Redis $cache */
-$cache = app()->resolve(Psr\SimpleCache\CacheInterface::class);
+$cache = app()->resolve(\Psr\SimpleCache\CacheInterface::class);
 $cache->set("cacheKey", "some test value");
 echo $cache->get("cacheKey");
 ```

@@ -4,7 +4,7 @@ namespace App\Handlers;
 
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
-use Monolog\Logger;
+use Psr\Log\LoggerInterface;
 use League\Plates\Engine;
 
 final class NotFound extends \Slim\Handlers\NotFound
@@ -21,7 +21,7 @@ final class NotFound extends \Slim\Handlers\NotFound
 		}
 
 		if ($app->console) {
-			$response->write("Error: request does not match any command::method or mandatory params are not properly set\n");
+			return $response->write("Error: request does not match any command::method or mandatory params are not properly set\n");
 		}
 
 		$resp = $app->resolve(Engine::class)->render('error::404');

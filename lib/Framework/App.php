@@ -52,7 +52,7 @@ class App
 		$container['phpErrorHandler'] = function() use($displayErrorDetails) {
 			return new PhpError($displayErrorDetails);
 		};
-		$container['notFoundHandler'] = function() use($displayErrorDetails) {
+		$container['notFoundHandler'] = function() {
 			return new NotFound();
 		};
 	}
@@ -174,7 +174,7 @@ class App
 		$baseUrl = $includeBaseUrl ? $this->getConfig('settings.baseUrl') : '';
 
 		$indexFile = '';
-		if ($showIndex === null && (bool)$this->getConfig('settings.indexFile')) {
+		if ($showIndex || ($showIndex === null && (bool)$this->getConfig('settings.indexFile'))) {
 			$indexFile = 'index.php/';
 		}
 		if (strlen($url) > 0 && $url[0] == '/') {
@@ -224,8 +224,7 @@ class App
 				throw new \ReflectionException("route class is not instantiable or method does not exist");
 			}
 		} catch (\ReflectionException $e) {
-			$handler = $this->getContainer()['notFoundHandler'];
-			return $handler($this->getContainer()['request'], $this->getContainer()['response']);
+			return $this->notFound();
 		}
 
 		$constructorArgs = $this->resolveMethodDependencies($class->getConstructor());
@@ -316,6 +315,17 @@ class App
 
 		// try to resolve from container
 		return $this->resolve($param->getClass()->name);
+	}
+
+
+	/**
+	 * execute not found handler and return response
+	 * @return \Psr\Http\Message\ResponseInterface
+	 */
+	public function notFound()
+	{
+		$handler = $this->getContainer()['notFoundHandler'];
+		return $handler($this->getContainer()['request'], $this->getContainer()['response']);
 	}
 
 }

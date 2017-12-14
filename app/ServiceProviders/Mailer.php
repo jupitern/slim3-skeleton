@@ -17,6 +17,7 @@ class Mailer
 				$configs = array_merge($defaultConfigs, $configsOverride);
 
 				$mail = new PHPMailer;
+				$mail->CharSet = "UTF-8";
 				$mail->isSMTP();
 				$mail->isHTML(true);
 				$mail->Host = $configs['host'];

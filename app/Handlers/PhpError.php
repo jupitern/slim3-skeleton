@@ -4,8 +4,8 @@ namespace App\Handlers;
 
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
-use League\Plates\Engine;
 use Psr\Log\LoggerInterface;
+use League\Plates\Engine;
 
 final class PhpError extends \Slim\Handlers\PhpError
 {
