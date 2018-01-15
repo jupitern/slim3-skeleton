@@ -12,7 +12,7 @@ class Whoops implements ProviderInterface
 	public static function register()
 	{
 		if (app()->console && class_exists(Collision::class)) {
-			(new \NunoMaduro\Collision\Provider)->register();
+			(new Collision)->register();
 		}
 		elseif (class_exists(Run::class)) {
 			$whoops = new Run;

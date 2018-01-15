@@ -6,6 +6,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Log\LoggerInterface;
 use League\Plates\Engine;
+use NunoMaduro\Collision\Provider as Collision;
 
 final class Error extends \Slim\Handlers\Error
 {
@@ -18,6 +19,13 @@ final class Error extends \Slim\Handlers\Error
 		// Log the message
 		if ($container->has(LoggerInterface::class)) {
 			$app->resolve(LoggerInterface::class)->error($exception);
+		}
+
+		if ($app->console && !class_exists(Collision::class)) {
+			return $response
+				->withStatus(500)
+				->withHeader('Content-type', 'text/plain')
+				->write("Exception: {$exception->getMessage()} \n\n {$exception->getTraceAsString()}");
 		}
 
 		if ($this->determineContentType($request) == 'text/html') {
