@@ -1,15 +1,13 @@
 <?php 
 
 namespace App\ServiceProviders;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\ResponseInterface;
 use Illuminate\Database\Capsule\Manager as Capsule;
 use Illuminate\Database\ConnectionInterface;
 
-class Eloquent
+class Eloquent implements ProviderInterface
 {
 
-	public function __invoke(ServerRequestInterface $request, ResponseInterface $response, $next)
+	public static function register()
 	{
 		$dbSettings = app()->getConfig('settings.database');
 
@@ -32,7 +30,5 @@ class Eloquent
 				return $conn;
 			};
 		};
-
-		return $next($request, $response);
 	}
 }

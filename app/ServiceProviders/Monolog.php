@@ -2,19 +2,17 @@
 
 namespace App\ServiceProviders;
 use Lib\Framework\App;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\ResponseInterface;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\ChromePHPHandler;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 
-class Monolog
+class Monolog implements ProviderInterface
 {
 
-	public function __invoke(ServerRequestInterface $request, ResponseInterface $response, $next)
-	{
+	public static function register()
+    {
 		app()->getContainer()[LoggerInterface::class] = function($c)  {
 			return function($logFilePath = null, $name = null, $level = LogLevel::DEBUG) {
 
@@ -43,8 +41,6 @@ class Monolog
 				return $logger;
 			};
 		};
-
-		return $next($request, $response);
-	}
+    }
 
 }

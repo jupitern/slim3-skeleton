@@ -1,14 +1,12 @@
 <?php
 
 namespace App\ServiceProviders;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\ResponseInterface;
 use PHPMailer\PHPMailer\PHPMailer;
 
-class Mailer
+class Mailer implements ProviderInterface
 {
 
-	public function __invoke(ServerRequestInterface $request, ResponseInterface $response, $next)
+	public static function register()
 	{
 		app()->getContainer()[PHPMailer::class] = function ($c) {
 			return function($configName = 'default', $configsOverride = []) {
@@ -32,8 +30,6 @@ class Mailer
 				return $mail;
 			};
 		};
-
-		return $next($request, $response);
 	}
 
 }

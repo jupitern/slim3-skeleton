@@ -36,7 +36,7 @@ $app->get('/help', function (Request $request, Response $response, $args) {
 
 				foreach ($class->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
 					if (strpos($method->getName(), '__') === 0) {
-						break;
+						continue;
 					}
 					$response->write("       ".strtolower($method->getName())." ");
 					foreach ($method->getParameters() as $parameter) {

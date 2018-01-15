@@ -1,18 +1,16 @@
 <?php
 
 namespace App\ServiceProviders;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\ResponseInterface;
 use League\Flysystem\Filesystem as FlySystem;
 use League\Flysystem\Adapter\Local;
 use League\Flysystem\Adapter\Ftp as FtpAdapter;
 use League\Flysystem\FilesystemInterface;
 
 
-class FileSystem
+class FileSystem implements ProviderInterface
 {
 
-	public function __invoke(ServerRequestInterface $request, ResponseInterface $response, $next)
+	public static function register()
 	{
 		app()->getContainer()[FilesystemInterface::class] = function ($c) {
 			return function($configName = 'local', $configsOverride = []) {
@@ -39,7 +37,5 @@ class FileSystem
 				return $filesystem;
 			};
 		};
-
-		return $next($request, $response);
 	}
 }

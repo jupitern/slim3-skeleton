@@ -1,14 +1,12 @@
 <?php
 
 namespace App\ServiceProviders;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\ResponseInterface;
 use League\Plates\Engine;
 
-class Plates
+class Plates implements ProviderInterface
 {
 
-	public function __invoke(ServerRequestInterface $request, ResponseInterface $response, $next)
+	public static function register()
 	{
 		app()->getContainer()[Engine::class] = function ($c) {
 			return function($directory = null, $fileExtension = 'php') {
@@ -21,8 +19,6 @@ class Plates
 				return $plates;
 			};
 		};
-
-		return $next($request, $response);
 	}
 
 }

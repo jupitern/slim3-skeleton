@@ -1,28 +1,26 @@
 <?php
 
 namespace App\ServiceProviders;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\ResponseInterface;
 use Whoops\Handler\PrettyPageHandler;
 use Whoops\RunInterface;
 use Whoops\Run;
+use NunoMaduro\Collision\Provider as Collision;
 
-class Whoops
+class Whoops implements ProviderInterface
 {
 
-	public function __invoke(ServerRequestInterface $request, ResponseInterface $response, $next)
+	public static function register()
 	{
-		if (class_exists(Run::class)) {
+		if (app()->console && class_exists(Collision::class)) {
+			(new \NunoMaduro\Collision\Provider)->register();
+		}
+		elseif (class_exists(Run::class)) {
 			$whoops = new Run;
 			$whoops->allowQuit(false);
 			$handler = new PrettyPageHandler;
 			$whoops->pushHandler($handler);
 			$whoops->register();
-
-			app()->getContainer()[RunInterface::class] = $whoops;
 		}
-
-		return $next($request, $response);
 	}
 
 }

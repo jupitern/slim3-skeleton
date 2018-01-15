@@ -1,16 +1,14 @@
 <?php
 
 namespace App\ServiceProviders;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\ResponseInterface;
 use Naroga\RedisCache\Redis;
 use Predis\Client;
 use Psr\SimpleCache\CacheInterface;
 
-class Cache
+class Cache implements ProviderInterface
 {
 
-	public function __invoke(ServerRequestInterface $request, ResponseInterface $response, $next)
+	public static function register()
 	{
 		app()->getContainer()[CacheInterface::class] = function ($c) {
 			return function($driver = 'default') {
@@ -19,8 +17,6 @@ class Cache
 				return new Redis(new Client($settings[$driver]));
 			};
 		};
-
-		return $next($request, $response);
 	}
 
 }

@@ -6,6 +6,7 @@ use Psr\Http\Message\ResponseInterface;
 use App\Handlers\Error;
 use App\Handlers\PhpError;
 use App\Handlers\NotFound;
+use Lib\Utils\DotNotation;
 
 class App
 {
@@ -18,6 +19,7 @@ class App
 
 	/** @var \Slim\App */
 	private $slim = null;
+	private $providers = [];
 	private $settings = [];
 	private static $instance = null;
 
@@ -92,7 +94,7 @@ class App
 	 */
 	public function setConfig($param, $value)
 	{
-		$dn = new \Lib\Utils\DotNotation($this->settings);
+		$dn = new DotNotation($this->settings);
 		$dn->set($param, $value);
 	}
 
@@ -105,7 +107,7 @@ class App
 	 */
 	public function getConfig($param, $defaultValue = null)
 	{
-		$dn = new \Lib\Utils\DotNotation($this->settings);
+		$dn = new DotNotation($this->settings);
 		return $dn->get($param, $defaultValue);
 	}
 
@@ -117,7 +119,8 @@ class App
 	public function registerProviders()
 	{
 		foreach ($this->getConfig('providers') as $provider) {
-			$this->slim->add(new $provider($this->getContainer()));
+			/** @var $provider \App\ServiceProviders\ProviderInterface */
+			$provider::register();
 		}
 	}
 
@@ -128,7 +131,7 @@ class App
 	 */
 	public function registerMiddleware()
 	{
-		foreach ($this->getConfig('middleware') as $middleware) {
+		foreach (array_reverse($this->getConfig('middleware')) as $middleware) {
 			$this->slim->add(new $middleware);
 		}
 	}
@@ -181,8 +184,9 @@ class App
 			$url = ltrim($url, '/');
 		}
 
-		return $baseUrl.$indexFile.$url;
+		return strtolower($baseUrl.$indexFile.$url);
 	}
+
 
 	/**
 	 * return a response object
@@ -319,7 +323,6 @@ class App
 
 
 	/**
-	 * execute not found handler and return response
 	 * @return \Psr\Http\Message\ResponseInterface
 	 */
 	public function notFound()
