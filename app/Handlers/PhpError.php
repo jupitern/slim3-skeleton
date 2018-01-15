@@ -20,13 +20,6 @@ final class PhpError extends \Slim\Handlers\PhpError
 			$app->resolve(LoggerInterface::class)->critical($error);
 		}
 
-		if ($app->console) {
-			return $response
-				->withStatus(500)
-				->withHeader('Content-type', 'text/plain')
-				->write("Exception: {$error->getMessage()} \n\n {$error->getTraceAsString()}");
-		}
-
 		if ($this->determineContentType($request) == 'text/html') {
 			if (!$this->displayErrorDetails) {
 				$resp = $app->resolve(Engine::class)->render('error::500', ['message' => $error->getMessage()]);

@@ -20,13 +20,6 @@ final class Error extends \Slim\Handlers\Error
 			$app->resolve(LoggerInterface::class)->error($exception);
 		}
 
-		if ($app->console) {
-			return $response
-				->withStatus(500)
-				->withHeader('Content-type', 'text/plain')
-				->write("Exception: {$exception->getMessage()} \n\n {$exception->getTraceAsString()}");
-		}
-
 		if ($this->determineContentType($request) == 'text/html') {
 			if (!$this->displayErrorDetails) {
 				$resp = $app->resolve(Engine::class)->render('error::500', ['message' => $exception->getMessage()]);
