@@ -19,7 +19,6 @@ class App
 
 	/** @var \Slim\App */
 	private $slim = null;
-	private $providers = [];
 	private $settings = [];
 	private static $instance = null;
 
@@ -168,7 +167,7 @@ class App
 	 * generate a url
 	 *
 	 * @param string $url
-	 * @param boolean $showIndex pass null to assume config file value
+	 * @param boolean|null $showIndex pass null to assume config file value
 	 * @param boolean $includeBaseUrl
 	 * @return string
 	 */
