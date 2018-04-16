@@ -1,7 +1,7 @@
 <?php
 
 namespace Lib\Framework;
-use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use App\Handlers\Error;
 use App\Handlers\PhpError;
@@ -44,7 +44,7 @@ class App
 			throw new \ErrorException($errstr, $errno, 0, $errfile, $errline);
 		});
 
-		$container[RequestInterface::class] = $container['request'];
+		$container[ServerRequestInterface::class] = $container['request'];
 		$container[ResponseInterface::class] = $container['response'];
 
 		$container['errorHandler'] = function() use($displayErrorDetails) {

@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http;
-use \Psr\Http\Message\RequestInterface as Request;
+use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 use \League\Plates\Engine;
 use \Psr\Log\LoggerInterface;
@@ -14,7 +14,7 @@ Abstract class Controller
 	public $view;
 
 	/**
-	 * @param \Psr\Http\Message\RequestInterface $request
+	 * @param \Psr\Http\Message\ServerRequestInterface $request
 	 * @param \Psr\Http\Message\ResponseInterface $response
 	 * @param \League\Plates\Engine $view
 	 * @param \Psr\Log\LoggerInterface $logger
