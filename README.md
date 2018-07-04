@@ -1,6 +1,6 @@
 # Slim Framework 3 Skeleton Application (http + cli)
 
-Use this skeleton application to quickly setup and start working on a new Slim Framework 3 application (Tested with slim 3.9).
+Use this skeleton application to quickly setup and start working on a new Slim Framework 3 application (Tested with slim 3.10).
 This application handles http and command line requests.
 This application ships with a few service providers and a Session middleware out of the box.
 Supports container resolution and auto-wiring.
