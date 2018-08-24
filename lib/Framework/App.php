@@ -15,7 +15,7 @@ class App
 	const DEVELOPMENT = 'development';
 	const STAGING = 'staging';
 	const PRODUCTION = 'production';
-	public static $env = self::DEVELOPMENT;
+	public $env = self::DEVELOPMENT;
 
 	/** @var \Slim\App */
 	private $slim = null;
@@ -32,8 +32,9 @@ class App
 		$this->settings = $settings;
 		$this->console = $console;
 		$this->slim = new \Slim\App($settings);
-		$container = $this->getContainer();
-		$displayErrorDetails = $settings['settings']['debug'];
+        $this->env = $settings['settings']['env'];
+        $container = $this->getContainer();
+        $displayErrorDetails = $settings['settings']['debug'];
 
 		date_default_timezone_set($settings['settings']['timezone']);
 

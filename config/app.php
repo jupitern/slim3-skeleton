@@ -1,7 +1,7 @@
 <?php
 return [
 	'settings' => [
-		'environment' => 'development',
+		'env' => \Lib\Framework\App::DEVELOPMENT,
 		'addContentLengthHeader' => false,
 		// default timezone
 		'timezone' => 'Europe/Lisbon',

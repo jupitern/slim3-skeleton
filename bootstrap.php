@@ -16,7 +16,7 @@ require ROOT_PATH.'vendor'.DS.'autoload.php';
 $console = PHP_SAPI == 'cli' ? true : false;
 
 $settings = require CONFIG_PATH.'app.php';
-$settingsEnv = require CONFIG_PATH.($settings['settings']['environment']).'.php';
+$settingsEnv = require CONFIG_PATH.($settings['settings']['env']).'.php';
 $settings = array_merge_recursive($settings, $settingsEnv);
 
 if ($console) {
@@ -25,13 +25,11 @@ if ($console) {
 	$argv = $GLOBALS['argv'];
 	array_shift($argv);
 
-	//Convert $argv to PATH_INFO
-	$env = \Slim\Http\Environment::mock([
+	// Convert $argv to PATH_INFO and mock console environment
+    $settings['environment'] = \Slim\Http\Environment::mock([
 		'SCRIPT_NAME' => $_SERVER['SCRIPT_NAME'],
 		'REQUEST_URI' => count($argv) >= 2 ? "/{$argv[0]}/{$argv[1]}" : "/help"
 	]);
-
-	$settings['environment'] = $env;
 }
 
 // instance app
