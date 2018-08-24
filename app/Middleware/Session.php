@@ -7,7 +7,7 @@ use Psr\Http\Message\ResponseInterface;
 class Session
 {
 
-	public function __invoke(ServerRequestInterface $request, ResponseInterface $response, $next)
+	public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next)
 	{
 		if (session_status() !== PHP_SESSION_ACTIVE) {
 
