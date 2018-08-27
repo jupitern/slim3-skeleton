@@ -1,6 +1,8 @@
 <?php
 
 /**
+ * @param array $settings   app settings
+ * @param boolean $console  weather app execution is cli
  * get app instance
  *
  * @return \Lib\Framework\App
@@ -75,6 +77,7 @@ function debug($var, $exit = false, $return = false, $separator = null)
  * @param string $separator
  *
  * @return string
+ * @throws ReflectionException
  */
 function dbLog($exit = false, $return = false, $separator = null)
 {
@@ -116,6 +119,7 @@ function dbLog($exit = false, $return = false, $separator = null)
  * @param string $separator
  *
  * @return string
+ * @throws ReflectionException
  */
 function dbLastQuery($exit = false, $return = false, $separator = null)
 {

@@ -120,7 +120,7 @@ class App
 	{
 		foreach ($this->getConfig('providers') as $provider) {
 			/** @var $provider \App\ServiceProviders\ProviderInterface */
-			$provider::register();
+            $provider::register();
 		}
 	}
 
