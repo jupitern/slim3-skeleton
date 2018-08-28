@@ -11,8 +11,12 @@ class Welcome extends Controller
 		// log some message
 		$this->logger->info("log a message");
 
-		// sending a response
-		return $this->view->render('site::test/welcome');
+		if ($this->view instanceof \Slim\Views\Twig) {
+            $this->view->render($this->response, "@site/test/welcome.twig");
+        }
+        elseif ($this->view instanceof \League\Plates\Engine) {
+            return $this->view->render('site::test/welcome');
+		}
 	}
 
 }

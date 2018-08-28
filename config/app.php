@@ -16,6 +16,12 @@ return [
 			'site' 	=> RESOURCES_PATH."views".DS."http".DS."site",
 			'mail' 	=> RESOURCES_PATH."views".DS."mail",
 		],
+        // setting for twig extension
+        'twig' => [
+            'cache' => STORAGE_PATH . 'twig',
+            'debug' => true,
+            'auto_reload' => true,
+        ],
 		'session' => [
 			'name' => 'app',
 			'lifetime' => 7200,
@@ -63,6 +69,7 @@ return [
 		App\ServiceProviders\Whoops::class,
 		App\ServiceProviders\Monolog::class,
 		App\ServiceProviders\Plates::class,
+		App\ServiceProviders\Twig::class,
 		App\ServiceProviders\Eloquent::class,
 		App\ServiceProviders\FileSystem::class,
 		App\ServiceProviders\Mailer::class,

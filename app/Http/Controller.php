@@ -3,7 +3,8 @@
 namespace App\Http;
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
-use \League\Plates\Engine;
+use \League\Plates\Engine as Plates;
+use \Slim\Views\Twig;
 use \Psr\Log\LoggerInterface;
 
 Abstract class Controller
@@ -19,7 +20,7 @@ Abstract class Controller
 	 * @param \League\Plates\Engine $view
 	 * @param \Psr\Log\LoggerInterface $logger
 	 */
-	public function __construct(Request $request, Response $response, Engine $view, LoggerInterface $logger)
+	public function __construct(Request $request, Response $response, Plates $view, LoggerInterface $logger)
 	{
 		$this->request = $request;
 		$this->response = $response;
