@@ -13,6 +13,7 @@ Available service providers:
 * Monolog
 * Eloquent
 * Plates
+* Twig
 * Flysystem
 * PHPMailer
 * Cache (redis for now)
