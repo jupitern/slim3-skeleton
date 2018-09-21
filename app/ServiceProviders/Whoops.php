@@ -2,7 +2,6 @@
 
 namespace App\ServiceProviders;
 use Whoops\Handler\PrettyPageHandler;
-use Whoops\RunInterface;
 use Whoops\Run;
 use NunoMaduro\Collision\Provider as Collision;
 
