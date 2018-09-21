@@ -1,7 +1,7 @@
 <?php
 
 namespace Lib\Framework;
-use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use App\Handlers\Error;
 use App\Handlers\PhpError;
@@ -29,14 +29,14 @@ class App
 	 */
 	protected function __construct($settings = [], $console = false)
 	{
-		$this->settings = $settings;
-		$this->console = $console;
-		$this->slim = new \Slim\App($settings);
+        $this->settings = $settings;
+        $this->console = $console;
+        $this->slim = new \Slim\App($settings);
         $this->env = $settings['settings']['env'];
         $container = $this->getContainer();
         $displayErrorDetails = $settings['settings']['debug'];
 
-		date_default_timezone_set($settings['settings']['timezone']);
+        date_default_timezone_set($settings['settings']['timezone']);
 
 		set_error_handler(function($errno, $errstr, $errfile, $errline) {
 			if (!($errno & error_reporting())) {
@@ -45,7 +45,7 @@ class App
 			throw new \ErrorException($errstr, $errno, 0, $errfile, $errline);
 		});
 
-		$container[ServerRequestInterface::class] = $container['request'];
+		$container[RequestInterface::class] = $container['request'];
 		$container[ResponseInterface::class] = $container['response'];
 
 		$container['errorHandler'] = function() use($displayErrorDetails) {
@@ -120,7 +120,7 @@ class App
 	{
 		foreach ($this->getConfig('providers') as $provider) {
 			/** @var $provider \App\ServiceProviders\ProviderInterface */
-            $provider::register();
+			$provider::register();
 		}
 	}
 
@@ -193,6 +193,8 @@ class App
 	 *
 	 * @param mixed $resp
 	 * @return \Psr\Http\Message\ResponseInterface
+     *
+     * @throws \ReflectionException
 	 */
 	public function sendResponse($resp)
 	{
@@ -296,11 +298,12 @@ class App
 	/**
 	 * resolve a dependency parameter
 	 *
-	 * @throws \ReflectionException
 	 * @param \ReflectionParameter $param
 	 * @param array $urlParams
 	 * @return mixed
-	 */
+     *
+     * @throws \ReflectionException
+     */
 	private function resolveDependency(\ReflectionParameter $param, $urlParams = [])
 	{
 		// for controller method para injection from $_GET
@@ -328,7 +331,43 @@ class App
 	public function notFound()
 	{
 		$handler = $this->getContainer()['notFoundHandler'];
+
 		return $handler($this->getContainer()['request'], $this->getContainer()['response']);
 	}
+
+
+    /**
+     * @param string $msg
+     * @param int $code
+     * @return \Psr\Http\Message\ResponseInterface
+     *
+     * @throws \ReflectionException
+     */
+    function error($msg, $code = 500)
+    {
+        if ($this->console) {
+            return $this->resolve('response')
+                ->withStatus($code)
+                ->withHeader('Content-type', 'text/plain')
+                ->write($msg);
+        }
+
+        if ($this->resolve('request')->getContentType() == 'application/json') {
+            if ($code == 422 && !is_array($msg)) {
+                $msg = [$msg];
+            }
+
+            return $this->resolve('response')
+                ->withHeader('Content-Type', 'application/json')
+                ->withStatus($code)
+                ->write(json_encode($msg));
+        }
+
+        $resp = $this->resolve(\League\Plates\Engine::class)->render('http::error', ['code' => $code, 'message' => $msg]);
+
+        return $this->resolve('response')
+            ->withStatus($code)
+            ->write($resp);
+    }
 
 }
