@@ -363,7 +363,7 @@ class App
                 ->write(json_encode($msg));
         }
 
-        $resp = $this->resolve(\League\Plates\Engine::class)->render('http::error', ['code' => $code, 'message' => $msg]);
+        $resp = $this->resolve(\League\Plates\Engine::class)->render('error::500', ['code' => $code, 'message' => $msg]);
 
         return $this->resolve('response')
             ->withStatus($code)
