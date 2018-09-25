@@ -352,7 +352,7 @@ class App
                 ->write($msg);
         }
 
-        if ($this->resolve('request')->getContentType() == 'application/json') {
+        if ($this->resolve('request')->getHeaderLine('Accept') == 'application/json') {
             if ($code == 422 && !is_array($msg)) {
                 $msg = [$msg];
             }
