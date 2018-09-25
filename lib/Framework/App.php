@@ -1,7 +1,7 @@
 <?php
 
 namespace Lib\Framework;
-use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ServerRequestInterface as RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use App\Handlers\Error;
 use App\Handlers\PhpError;
