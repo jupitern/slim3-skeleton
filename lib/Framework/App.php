@@ -10,7 +10,8 @@ use Lib\Utils\DotNotation;
 
 class App
 {
-	public $console = false;
+
+	public $appName;
 
 	const DEVELOPMENT = 'development';
 	const STAGING = 'staging';
@@ -24,19 +25,20 @@ class App
 
 
 	/**
+	 * @param string $appName
 	 * @param array $settings
-	 * @param boolean $console
 	 */
-	protected function __construct($settings = [], $console = false)
+	protected function __construct($appName = '', $settings = [])
 	{
+        $this->appName = $appName;
         $this->settings = $settings;
-        $this->console = $console;
         $this->slim = new \Slim\App($settings);
         $this->env = $settings['settings']['env'];
         $container = $this->getContainer();
         $displayErrorDetails = $settings['settings']['debug'];
 
         date_default_timezone_set($settings['settings']['timezone']);
+        \Locale::setDefault($settings['settings']['locale']);
 
 		set_error_handler(function($errno, $errstr, $errfile, $errline) {
 			if (!($errno & error_reporting())) {
@@ -62,18 +64,29 @@ class App
 	/**
 	 * Application Singleton Factory
 	 *
+	 * @param string $appName
 	 * @param array $settings
-	 * @param boolean $console
 	 * @return static
 	 */
-	final public static function instance($settings = [], $console = false)
+	final public static function instance($appName = '', $settings = [])
 	{
 		if (null === static::$instance) {
-			static::$instance = new static($settings, $console);
+			static::$instance = new static($appName, $settings);
 		}
 
 		return static::$instance;
 	}
+
+
+    /**
+     * get if running application is console
+     *
+     * @return boolean
+     */
+    public function isConsole()
+    {
+        return php_sapi_name() == 'cli';
+    }
 
 
 	/**
@@ -118,10 +131,13 @@ class App
 	 */
 	public function registerProviders()
 	{
-		foreach ($this->getConfig('providers') as $provider) {
-			/** @var $provider \App\ServiceProviders\ProviderInterface */
-			$provider::register();
-		}
+	    $providers = (array)$this->getConfig('providers');
+	    array_walk($providers, function(&$appName, $provider) {
+	        if (strpos($appName, $this->appName) !== false) {
+                /** @var $provider \App\ServiceProviders\ProviderInterface */
+                $provider::register();
+            }
+	    });
 	}
 
 	/**
@@ -131,9 +147,12 @@ class App
 	 */
 	public function registerMiddleware()
 	{
-		foreach (array_reverse($this->getConfig('middleware')) as $middleware) {
-			$this->slim->add(new $middleware);
-		}
+	    $middlewares = array_reverse((array)$this->getConfig('middleware'));
+        array_walk($middlewares, function($appName, $middleware) {
+            if (strpos($appName, $this->appName) !== false) {
+                $this->slim->add(new $middleware);
+            }
+        });
 	}
 
 
@@ -345,7 +364,7 @@ class App
      */
     function error($msg, $code = 500)
     {
-        if ($this->console) {
+        if ($this->isConsole()) {
             return $this->resolve('response')
                 ->withStatus($code)
                 ->withHeader('Content-type', 'text/plain')
@@ -360,7 +379,7 @@ class App
             return $this->resolve('response')
                 ->withHeader('Content-Type', 'application/json')
                 ->withStatus($code)
-                ->write(json_encode($msg));
+                ->withJson($msg);
         }
 
         $resp = $this->resolve(\League\Plates\Engine::class)->render('error::500', ['code' => $code, 'message' => $msg]);

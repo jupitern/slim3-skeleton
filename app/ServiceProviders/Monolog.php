@@ -1,42 +1,45 @@
 <?php
 
 namespace App\ServiceProviders;
-use Lib\Framework\App;
-use Monolog\Logger;
-use Monolog\Handler\StreamHandler;
-use Monolog\Handler\ChromePHPHandler;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
+use Monolog\Formatter\LineFormatter;
 
 class Monolog implements ProviderInterface
 {
 
 	public static function register()
     {
-		app()->getContainer()[LoggerInterface::class] = function($c)  {
-			return function($logFilePath = null, $name = null, $level = LogLevel::DEBUG) {
+        $app = app();
+        $appName = $app->isConsole() ? 'console' : 'http';
+        $logFilePath = $logFilePath ?? $app->getConfig("settings.log.file");
+
+        $logger = new Logger($appName);
+
+        if (!empty($logFilePath)) {
+            $formatter = new LineFormatter(null, null, true);
+            $formatter->includeStacktraces(false);
+
+            $handler = new StreamHandler($logFilePath, LogLevel::DEBUG);
+            $handler->setFormatter($formatter);
+            $logger->pushHandler($handler);
+        }
+
+		app()->getContainer()[LoggerInterface::class] = function($c) use($appName) {
+			return function($logFilePath = null, $name = null, $level = LogLevel::DEBUG) use($appName) {
 
 				$app = app();
-				$name = $name ?? $app->console;
-				$logFilePath = $logFilePath ?? $app->getConfig("settings.appLogFilePath");
+				$name = $name ?? $appName;
+				$logFilePath = $logFilePath ?? $app->getConfig("settings.log.file");
 
 				$logger = new Logger($name);
-
-				if (!empty($logFilePath)) {
-					$formatter = new \Monolog\Formatter\LineFormatter(null, null, true);
-					$formatter->includeStacktraces(false);
-
-					$handler = new StreamHandler($logFilePath, $level);
-					$handler->setFormatter($formatter);
-
-					$logger->pushHandler($handler);
-
-					if ((bool)app()->getConfig("settings.debug")) {
-						$handler2 = new ChromePHPHandler($level);
-
-						$logger->pushHandler($handler2);
-					}
-				}
+                $formatter = new LineFormatter(null, null, true);
+                $formatter->includeStacktraces(false);
+                $handler = new StreamHandler($logFilePath, $level);
+                $handler->setFormatter($formatter);
+                $logger->pushHandler($handler);
 
 				return $logger;
 			};

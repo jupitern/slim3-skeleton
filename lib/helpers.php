@@ -1,14 +1,15 @@
 <?php
 /**
  * get app instance
+ * @param string $appName
  * @param array $settings
  * @param boolean $console
  *
  * @return \Lib\Framework\App
  */
-function app($settings = [], $console = false)
+function app($appName = null, $settings = [])
 {
-	return \Lib\Framework\App::instance($settings, $console);
+    return \Lib\Framework\App::instance($appName, $settings);
 }
 
 
@@ -76,6 +77,7 @@ function debug($var, $exit = false, $return = false, $separator = null)
  * @param string $separator
  *
  * @return string
+ * @throws \ReflectionException
  */
 function dbLog($exit = false, $return = false, $separator = null)
 {
@@ -117,6 +119,7 @@ function dbLog($exit = false, $return = false, $separator = null)
  * @param string $separator
  *
  * @return string
+ * @throws \ReflectionException
  */
 function dbLastQuery($exit = false, $return = false, $separator = null)
 {

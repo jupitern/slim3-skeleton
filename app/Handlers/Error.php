@@ -20,7 +20,7 @@ final class Error extends \Slim\Handlers\Error
             $app->resolve(LoggerInterface::class)->error($exception);
         }
 
-        if ($app->console && class_exists(Collision::class)) {
+        if ($app->isConsole() && class_exists(Collision::class)) {
             throw $exception;
         }
 
