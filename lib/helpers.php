@@ -1,22 +1,22 @@
 <?php
-
 /**
- * @param array $settings   app settings
- * @param boolean $console  weather app execution is cli
  * get app instance
+ * @param string $appName
+ * @param array $settings
+ * @param boolean $console
  *
  * @return \Lib\Framework\App
  */
-function app($settings = [], $console = false)
+function app($appName = null, $settings = [])
 {
-	return \Lib\Framework\App::instance($settings, $console);
+    return \Lib\Framework\App::instance($appName, $settings);
 }
 
 
 /**
  * @param string $url
  * @param boolean|null $showIndex pass null to assume config default value
- * @param bool $includeBaseUrl
+ * @param boolean $includeBaseUrl
  *
  * @return string
  */
@@ -63,10 +63,10 @@ function debug($var, $exit = false, $return = false, $separator = null)
 
 	if ($separator == "<br/>") $log .= '</pre>';
 
-	if (!$return) echo $log;
+	if (!$return) echo $log.$separator;
 	if ($exit) exit();
 
-	return $log;
+	return $log.$separator;
 }
 
 /**
@@ -77,7 +77,7 @@ function debug($var, $exit = false, $return = false, $separator = null)
  * @param string $separator
  *
  * @return string
- * @throws ReflectionException
+ * @throws \ReflectionException
  */
 function dbLog($exit = false, $return = false, $separator = null)
 {
@@ -119,7 +119,7 @@ function dbLog($exit = false, $return = false, $separator = null)
  * @param string $separator
  *
  * @return string
- * @throws ReflectionException
+ * @throws \ReflectionException
  */
 function dbLastQuery($exit = false, $return = false, $separator = null)
 {
