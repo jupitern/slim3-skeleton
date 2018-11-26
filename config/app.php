@@ -74,11 +74,13 @@ return [
 		App\ServiceProviders\FileSystem::class,
 		App\ServiceProviders\Mailer::class,
 		App\ServiceProviders\Cache::class,
+		App\ServiceProviders\Flash::class,
 	],
 	// add your middleware here
 	// middleware bellow are called for every route
 	'middleware' => [
 		App\Middleware\Session::class,
+		App\Middleware\Flash::class,
 	],
 
 ];
