@@ -74,6 +74,7 @@ return [
 		App\ServiceProviders\FileSystem::class,
 		App\ServiceProviders\Mailer::class,
 		App\ServiceProviders\Cache::class,
+		App\ServiceProviders\Jobby::class,
 	],
 	// add your middleware here
 	// middleware bellow are called for every route

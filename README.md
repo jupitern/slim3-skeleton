@@ -17,6 +17,7 @@ Available service providers:
 * Flysystem
 * PHPMailer
 * Cache (redis for now)
+* [Jobby](https://github.com/jobbyphp/jobby)
 
 Available middleware:
 
@@ -229,6 +230,18 @@ Write and read from cache (using default driver redis)
 $cache = app()->resolve(\Psr\SimpleCache\CacheInterface::class);
 $cache->set("cacheKey", "some test value");
 echo $cache->get("cacheKey");
+```
+
+### Jobby usage
+
+Then add the following line to your (or whomever's) crontab:
+```
+* * * * * cd /path/to/project && php cli.php Jobby init 1>> /dev/null 2>&1
+```
+
+After Jobby installs, you can copy an example file to the project root.
+```
+$ cp vendor/hellogerard/jobby/resources/jobby.php .
 ```
 
 ## Roadmap
