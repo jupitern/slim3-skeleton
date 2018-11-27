@@ -17,6 +17,7 @@ Available service providers:
 * Flysystem
 * PHPMailer
 * Cache (redis for now)
+* Flash Message
 
 Available middleware:
 
