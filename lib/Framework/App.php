@@ -1,7 +1,7 @@
 <?php
 
 namespace Lib\Framework;
-use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\ServerRequestInterface as RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use App\Handlers\Error;
 use App\Handlers\PhpError;
@@ -10,7 +10,8 @@ use Lib\Utils\DotNotation;
 
 class App
 {
-	public $console = false;
+
+	public $appName;
 
 	const DEVELOPMENT = 'development';
 	const STAGING = 'staging';
@@ -24,19 +25,20 @@ class App
 
 
 	/**
+	 * @param string $appName
 	 * @param array $settings
-	 * @param boolean $console
 	 */
-	protected function __construct($settings = [], $console = false)
+	protected function __construct($appName = '', $settings = [])
 	{
-		$this->settings = $settings;
-		$this->console = $console;
-		$this->slim = new \Slim\App($settings);
+        $this->appName = $appName;
+        $this->settings = $settings;
+        $this->slim = new \Slim\App($settings);
         $this->env = $settings['settings']['env'];
         $container = $this->getContainer();
         $displayErrorDetails = $settings['settings']['debug'];
 
-		date_default_timezone_set($settings['settings']['timezone']);
+        date_default_timezone_set($settings['settings']['timezone']);
+        \Locale::setDefault($settings['settings']['locale']);
 
 		set_error_handler(function($errno, $errstr, $errfile, $errline) {
 			if (!($errno & error_reporting())) {
@@ -45,7 +47,7 @@ class App
 			throw new \ErrorException($errstr, $errno, 0, $errfile, $errline);
 		});
 
-		$container[ServerRequestInterface::class] = $container['request'];
+		$container[RequestInterface::class] = $container['request'];
 		$container[ResponseInterface::class] = $container['response'];
 
 		$container['errorHandler'] = function() use($displayErrorDetails) {
@@ -62,18 +64,29 @@ class App
 	/**
 	 * Application Singleton Factory
 	 *
+	 * @param string $appName
 	 * @param array $settings
-	 * @param boolean $console
 	 * @return static
 	 */
-	final public static function instance($settings = [], $console = false)
+	final public static function instance($appName = '', $settings = [])
 	{
 		if (null === static::$instance) {
-			static::$instance = new static($settings, $console);
+			static::$instance = new static($appName, $settings);
 		}
 
 		return static::$instance;
 	}
+
+
+    /**
+     * get if running application is console
+     *
+     * @return boolean
+     */
+    public function isConsole()
+    {
+        return php_sapi_name() == 'cli';
+    }
 
 
 	/**
@@ -118,10 +131,13 @@ class App
 	 */
 	public function registerProviders()
 	{
-		foreach ($this->getConfig('providers') as $provider) {
-			/** @var $provider \App\ServiceProviders\ProviderInterface */
-            $provider::register();
-		}
+	    $providers = (array)$this->getConfig('providers');
+	    array_walk($providers, function(&$appName, $provider) {
+	        if (strpos($appName, $this->appName) !== false) {
+                /** @var $provider \App\ServiceProviders\ProviderInterface */
+                $provider::register();
+            }
+	    });
 	}
 
 	/**
@@ -131,9 +147,12 @@ class App
 	 */
 	public function registerMiddleware()
 	{
-		foreach (array_reverse($this->getConfig('middleware')) as $middleware) {
-			$this->slim->add(new $middleware);
-		}
+	    $middlewares = array_reverse((array)$this->getConfig('middleware'));
+        array_walk($middlewares, function($appName, $middleware) {
+            if (strpos($appName, $this->appName) !== false) {
+                $this->slim->add(new $middleware);
+            }
+        });
 	}
 
 
@@ -193,6 +212,8 @@ class App
 	 *
 	 * @param mixed $resp
 	 * @return \Psr\Http\Message\ResponseInterface
+     *
+     * @throws \ReflectionException
 	 */
 	public function sendResponse($resp)
 	{
@@ -296,11 +317,12 @@ class App
 	/**
 	 * resolve a dependency parameter
 	 *
-	 * @throws \ReflectionException
 	 * @param \ReflectionParameter $param
 	 * @param array $urlParams
 	 * @return mixed
-	 */
+     *
+     * @throws \ReflectionException
+     */
 	private function resolveDependency(\ReflectionParameter $param, $urlParams = [])
 	{
 		// for controller method para injection from $_GET
@@ -328,7 +350,43 @@ class App
 	public function notFound()
 	{
 		$handler = $this->getContainer()['notFoundHandler'];
+
 		return $handler($this->getContainer()['request'], $this->getContainer()['response']);
 	}
+
+
+    /**
+     * @param string $msg
+     * @param int $code
+     * @return \Psr\Http\Message\ResponseInterface
+     *
+     * @throws \ReflectionException
+     */
+    function error($msg, $code = 500)
+    {
+        if ($this->isConsole()) {
+            return $this->resolve('response')
+                ->withStatus($code)
+                ->withHeader('Content-type', 'text/plain')
+                ->write($msg);
+        }
+
+        if ($this->resolve('request')->getHeaderLine('Accept') == 'application/json') {
+            if ($code == 422 && !is_array($msg)) {
+                $msg = [$msg];
+            }
+
+            return $this->resolve('response')
+                ->withHeader('Content-Type', 'application/json')
+                ->withStatus($code)
+                ->withJson($msg);
+        }
+
+        $resp = $this->resolve(\League\Plates\Engine::class)->render('error::500', ['code' => $code, 'message' => $msg]);
+
+        return $this->resolve('response')
+            ->withStatus($code)
+            ->write($resp);
+    }
 
 }
