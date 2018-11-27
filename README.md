@@ -232,6 +232,12 @@ $cache->set("cacheKey", "some test value");
 echo $cache->get("cacheKey");
 ```
 
+## Changelog
+
+V3.0.0
+ - Allow for providers and middleware to be registered only for a given scope (dependent on app name)
+ - general code improvements and error handling when developing rest api
+
 ## Roadmap
 
  - [ ] more service providers / separate service providers in packages

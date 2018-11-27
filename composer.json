@@ -12,7 +12,6 @@
     "nunomaduro/collision": "2.0.*",
     "league/flysystem": "1.0.*",
     "league/plates": "3.3.*",
-    "slim/twig-view": "2.4.*",
     "illuminate/database": "5.6.*",
     "phpmailer/phpmailer": "6.0.*",
     "naroga/redis-cache": "1.1.*",
@@ -30,6 +29,7 @@
   },
   "suggest": {
   	"respect/validation": "1.1.*",
-    "jupitern/table": "1.*"
+    "jupitern/table": "1.*",
+    "slim/twig-view": "2.4.*"
   }
 }
