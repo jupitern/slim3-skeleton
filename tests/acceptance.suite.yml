@@ -8,7 +8,7 @@ modules:
   enabled:
     #        - PhpBrowser:
     - WebDriver:
-        url: "http://local.slim3"
+        url: "http://localhost:8080"
         port: '9515'
         browser: chrome
     - \Helper\Acceptance
