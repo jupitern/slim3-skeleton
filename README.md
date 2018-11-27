@@ -232,6 +232,7 @@ $cache->set("cacheKey", "some test value");
 echo $cache->get("cacheKey");
 ```
 
+
 ### Test examples
 
 Have the latest version of chrome installed.
@@ -245,6 +246,13 @@ go to project folder and run the following command.
 ```
 ./vendor/bin/codecept run --steps
 ``` 
+
+## Changelog
+
+V3.0.0
+ - Allow for providers and middleware to be registered only for a given scope (dependent on app name)
+ - general code improvements and error handling when developing rest api
+
 
 ## Roadmap
 

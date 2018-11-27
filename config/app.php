@@ -3,12 +3,16 @@ return [
 	'settings' => [
 		'env' => \Lib\Framework\App::DEVELOPMENT,
 		'addContentLengthHeader' => false,
-		// default timezone
+		// default timezone & locale
 		'timezone' => 'Europe/Lisbon',
+        'locale' => 'pt_PT',
 		// Only set this if you need access to route within middleware
 		'determineRouteBeforeAppMiddleware' => false,
 		// log file path
-		'appLogFilePath' => STORAGE_PATH."logs".DS."app_".date('Ymd').".log",
+        'log' => [
+            // log file path
+            'file' => STORAGE_PATH."logs".DS."app_".date('Ymd').".log",
+        ],
 		// template folders
 		'templates' => [
 			'error' => RESOURCES_PATH."views".DS."http".DS."error",
@@ -64,21 +68,20 @@ return [
 		],
 	],
 	// add your service providers here
-	// providers bellow are ALWAYS added
 	'providers' => [
-		App\ServiceProviders\Whoops::class,
-		App\ServiceProviders\Monolog::class,
-		App\ServiceProviders\Plates::class,
-		App\ServiceProviders\Twig::class,
-		App\ServiceProviders\Eloquent::class,
-		App\ServiceProviders\FileSystem::class,
-		App\ServiceProviders\Mailer::class,
-		App\ServiceProviders\Cache::class,
+        App\ServiceProviders\Monolog::class => 'http,console',
+        App\ServiceProviders\Whoops::class => 'http',
+        App\ServiceProviders\Collision::class => 'console',
+		App\ServiceProviders\Plates::class => 'http',
+		App\ServiceProviders\Twig::class => 'http',
+		App\ServiceProviders\Eloquent::class => 'http,console',
+		App\ServiceProviders\FileSystem::class => 'http,console',
+		App\ServiceProviders\Mailer::class => 'http,console',
+		App\ServiceProviders\Cache::class => 'http,console',
 	],
 	// add your middleware here
-	// middleware bellow are called for every route
 	'middleware' => [
-		App\Middleware\Session::class,
+		App\Middleware\Session::class => 'http',
 	],
 
 ];

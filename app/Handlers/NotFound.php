@@ -20,9 +20,13 @@ final class NotFound extends \Slim\Handlers\NotFound
 			$app->resolve(LoggerInterface::class)->error("URI '".$request->getUri()->getPath()."' not found");
 		}
 
-		if ($app->console) {
+		if ($app->isConsole()) {
 			return $response->write("Error: request does not match any command::method or mandatory params are not properly set\n");
 		}
+
+        if ($this->determineContentType($request) == 'application/json') {
+		    return app()->error("URI '".$request->getUri()->getPath()."' not found", 404);
+        }
 
 		$resp = $app->resolve(Engine::class)->render('error::404');
 		$response->withStatus(404)->write($resp);

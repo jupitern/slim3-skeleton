@@ -130,6 +130,7 @@ class DotNotation
 
 	/**
 	 * @param string $path
+     * @return mixed
 	 */
 	protected function explode($path)
 	{
