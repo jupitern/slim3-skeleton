@@ -18,7 +18,9 @@
     "naroga/redis-cache": "1.1.*"
   },
   "require-dev": {
-    "filp/whoops": "2.2.*"
+    "filp/whoops": "2.2.*",
+    "herloct/codeception-slim-module": "^1.1",
+    "codeception/codeception": "^2.5"
   },
   "autoload": {
       "psr-4": {

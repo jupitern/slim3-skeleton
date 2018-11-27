@@ -17,6 +17,7 @@ Available service providers:
 * Flysystem
 * PHPMailer
 * Cache (redis for now)
+* [Codeception](https://codeception.com/quickstart)
 
 Available middleware:
 
@@ -230,6 +231,20 @@ $cache = app()->resolve(\Psr\SimpleCache\CacheInterface::class);
 $cache->set("cacheKey", "some test value");
 echo $cache->get("cacheKey");
 ```
+
+### Test examples
+
+Have the latest version of chrome installed.
+
+go to the test folder and run the following command. (linux)
+```
+./chromedriver --url-base=/wd/hub
+```
+go to project folder and run the following command.
+
+```
+./vendor/bin/codecept run --steps
+``` 
 
 ## Roadmap
 
