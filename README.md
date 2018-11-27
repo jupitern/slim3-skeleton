@@ -18,6 +18,7 @@ Available service providers:
 * PHPMailer
 * Cache (redis for now)
 * [Codeception](https://codeception.com/quickstart)
+* [Jobby](https://github.com/jobbyphp/jobby)
 
 Available middleware:
 
@@ -232,7 +233,6 @@ $cache->set("cacheKey", "some test value");
 echo $cache->get("cacheKey");
 ```
 
-
 ### Test examples
 
 Have the latest version of chrome installed.
@@ -246,6 +246,18 @@ go to project folder and run the following command.
 ```
 ./vendor/bin/codecept run --steps
 ``` 
+### Jobby usage
+
+Then add the following line to your (or whomever's) crontab:
+```
+* * * * * cd /path/to/project && php cli.php Jobby init 1>> /dev/null 2>&1
+```
+
+After Jobby installs, you can copy an example file to the project root.
+```
+$ cp vendor/hellogerard/jobby/resources/jobby.php .
+```
+
 
 ## Changelog
 

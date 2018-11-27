@@ -14,7 +14,8 @@
     "league/plates": "3.3.*",
     "illuminate/database": "5.6.*",
     "phpmailer/phpmailer": "6.0.*",
-    "naroga/redis-cache": "1.1.*"
+    "naroga/redis-cache": "1.1.*",
+    "hellogerard/jobby": "^3.4"
   },
   "require-dev": {
     "filp/whoops": "2.2.*",

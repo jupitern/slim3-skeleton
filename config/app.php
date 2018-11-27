@@ -69,15 +69,15 @@ return [
 	],
 	// add your service providers here
 	'providers' => [
-        App\ServiceProviders\Monolog::class => 'http,console',
-        App\ServiceProviders\Whoops::class => 'http',
-        App\ServiceProviders\Collision::class => 'console',
+    App\ServiceProviders\Monolog::class => 'http,console',
+    App\ServiceProviders\Whoops::class => 'http',
+    App\ServiceProviders\Collision::class => 'console',
 		App\ServiceProviders\Plates::class => 'http',
 		App\ServiceProviders\Twig::class => 'http',
 		App\ServiceProviders\Eloquent::class => 'http,console',
 		App\ServiceProviders\FileSystem::class => 'http,console',
 		App\ServiceProviders\Mailer::class => 'http,console',
-		App\ServiceProviders\Cache::class => 'http,console',
+		App\ServiceProviders\Jobby::class,
 	],
 	// add your middleware here
 	'middleware' => [
