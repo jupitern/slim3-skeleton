@@ -17,6 +17,7 @@ Available service providers:
 * Flysystem
 * PHPMailer
 * Cache (redis for now)
+* Flash Message
 * [Jobby](https://github.com/jobbyphp/jobby)
 
 Available middleware:

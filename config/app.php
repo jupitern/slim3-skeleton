@@ -77,11 +77,14 @@ return [
 		App\ServiceProviders\Eloquent::class => 'http,console',
 		App\ServiceProviders\FileSystem::class => 'http,console',
 		App\ServiceProviders\Mailer::class => 'http,console',
+		App\ServiceProviders\Cache::class => 'http,console',
+    App\ServiceProviders\Flash::class,
 		App\ServiceProviders\Jobby::class,
 	],
 	// add your middleware here
 	'middleware' => [
 		App\Middleware\Session::class => 'http',
+    App\Middleware\Flash::class,
 	],
 
 ];
