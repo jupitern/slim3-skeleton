@@ -79,6 +79,7 @@ return [
 		App\ServiceProviders\Mailer::class => 'http,console',
 		App\ServiceProviders\Cache::class => 'http,console',
     App\ServiceProviders\Flash::class,
+		App\ServiceProviders\Jobby::class,
 	],
 	// add your middleware here
 	'middleware' => [

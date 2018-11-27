@@ -18,6 +18,7 @@ Available service providers:
 * PHPMailer
 * Cache (redis for now)
 * Flash Message
+* [Jobby](https://github.com/jobbyphp/jobby)
 
 Available middleware:
 
@@ -232,11 +233,25 @@ $cache->set("cacheKey", "some test value");
 echo $cache->get("cacheKey");
 ```
 
+### Jobby usage
+
+Then add the following line to your (or whomever's) crontab:
+```
+* * * * * cd /path/to/project && php cli.php Jobby init 1>> /dev/null 2>&1
+```
+
+After Jobby installs, you can copy an example file to the project root.
+```
+$ cp vendor/hellogerard/jobby/resources/jobby.php .
+```
+
+
 ## Changelog
 
 V3.0.0
  - Allow for providers and middleware to be registered only for a given scope (dependent on app name)
  - general code improvements and error handling when developing rest api
+
 
 ## Roadmap
 
