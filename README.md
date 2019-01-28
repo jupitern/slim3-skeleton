@@ -1,6 +1,6 @@
 # Slim Framework 3 Skeleton Application (http + cli)
 
-Use this skeleton application to quickly setup and start working on a new Slim Framework 3 application (Tested with slim 3.10).
+Use this skeleton application to quickly setup and start working on a new Slim Framework 3 application (Tested with slim 3.12).
 This application handles http and command line requests.
 This application ships with a few service providers and a Session middleware out of the box.
 Supports container resolution and auto-wiring.
@@ -9,14 +9,14 @@ To remove a service provider comment it on config/app.php file and remove it fro
 
 Available service providers:
 
-* Whoops
-* Monolog
-* Eloquent
-* Plates
-* Twig
-* Flysystem
-* PHPMailer
-* Cache (redis for now)
+* [SlashTrace](https://github.com/slashtrace/slashtrace)
+* [Monolog](https://github.com/Seldaek/monolog)
+* [Eloquent](https://github.com/illuminate/database)
+* [Plates](https://github.com/thephpleague/plates)
+* [Twig](https://github.com/twigphp/Twig)
+* [Flysystem](https://github.com/thephpleague/flysystem)
+* [PHPMailer](https://github.com/PHPMailer/PHPMailer)
+* [Redis Cache](https://github.com/naroga/redis-cache)
 * [Jobby](https://github.com/jobbyphp/jobby)
 
 Available middleware:
@@ -247,7 +247,10 @@ $ cp vendor/hellogerard/jobby/resources/jobby.php .
 
 ## Changelog
 
-V3.0.0
+v2.6
+ - Replaced Whoops and Collision packages by slashtrace that provides http and cli debug
+
+V2.5
  - Allow for providers and middleware to be registered only for a given scope (dependent on app name)
  - general code improvements and error handling when developing rest api
 

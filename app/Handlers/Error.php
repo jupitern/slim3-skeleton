@@ -5,7 +5,7 @@ namespace App\Handlers;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Log\LoggerInterface;
-use NunoMaduro\Collision\Provider as Collision;
+use App\ServiceProviders\SlashTrace;
 
 final class Error extends \Slim\Handlers\Error
 {
@@ -16,11 +16,11 @@ final class Error extends \Slim\Handlers\Error
         $container = $app->getContainer();
 
         // Log the message
-        if ($container->has(LoggerInterface::class)) {
+        if ($container->has(LoggerInterface::class) && !$this->displayErrorDetails) {
             $app->resolve(LoggerInterface::class)->error($exception);
         }
 
-        if ($app->isConsole() && class_exists(Collision::class)) {
+        if (class_exists(SlashTrace::class) && ($app->isConsole() || $this->displayErrorDetails)) {
             throw $exception;
         }
 

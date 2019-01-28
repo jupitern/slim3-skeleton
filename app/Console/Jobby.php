@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Jerfeson Guerreiro
- * Date: 26/11/18
- * Time: 20:56
- */
 
 namespace App\Console;
 
@@ -28,10 +22,9 @@ class Jobby extends Command
      */
     private function test()
     {
-        
         $this->jobby->add('CommandExample', [
             'closure' => function () {
-                $fp = fopen('data.txt', 'w');
+                $fp = fopen('storage\\data.txt', 'a');
                 fwrite($fp, 'Working');
                 fclose($fp);
                 return true;
