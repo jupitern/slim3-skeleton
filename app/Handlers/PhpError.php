@@ -10,6 +10,15 @@ use App\ServiceProviders\SlashTrace;
 final class PhpError extends \Slim\Handlers\PhpError
 {
 
+    /**
+     * @param \Psr\Http\Message\ServerRequestInterface $request
+     * @param \Psr\Http\Message\ResponseInterface      $response
+     * @param \Throwable                               $error
+     *
+     * @return \Psr\Http\Message\ResponseInterface
+     * @throws \ReflectionException
+     * @throws \Throwable
+     */
     public function __invoke(Request $request, Response $response, \Throwable $error)
     {
         $app = app();
@@ -20,7 +29,9 @@ final class PhpError extends \Slim\Handlers\PhpError
             $app->resolve(LoggerInterface::class)->error($error);
         }
 
-        if (class_exists(SlashTrace::class) && ($app->isConsole() || $this->displayErrorDetails)) {
+        if (app()->has('slashtrace') && ($app->isConsole() || $this->displayErrorDetails)) {
+            app()->resolve('slashtrace')->register();
+            http_response_code(500);
             throw $error;
         }
 

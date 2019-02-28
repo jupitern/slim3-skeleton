@@ -3,21 +3,16 @@
 namespace App\ServiceProviders;
 use SlashTrace\SlashTrace as ST;
 use SlashTrace\EventHandler\DebugHandler;
-use SlashTrace\DebugRenderer\DebugCliRenderer;
 
 class SlashTrace implements ProviderInterface
 {
 
-	public static function register()
-	{
-	    $d = new DebugHandler();
-	    if (php_sapi_name() === "cli") $d->setRenderer(new DebugCliRenderer());
-
+    public static function register()
+    {
         $st = new ST();
-        $st->addHandler($d);
-        $st->register();
+        $st->addHandler(new DebugHandler());
 
         app()->getContainer()['slashtrace'] = $st;
-	}
+    }
 
 }

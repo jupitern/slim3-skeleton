@@ -10,6 +10,15 @@ use App\ServiceProviders\SlashTrace;
 final class Error extends \Slim\Handlers\Error
 {
 
+    /**
+     * @param \Psr\Http\Message\ServerRequestInterface $request
+     * @param \Psr\Http\Message\ResponseInterface      $response
+     * @param \Exception                               $exception
+     *
+     * @return \Psr\Http\Message\ResponseInterface
+     * @throws \ReflectionException
+     * @throws \Exception
+     */
     public function __invoke(Request $request, Response $response, \Exception $exception)
     {
         $app = app();
@@ -20,7 +29,9 @@ final class Error extends \Slim\Handlers\Error
             $app->resolve(LoggerInterface::class)->error($exception);
         }
 
-        if (class_exists(SlashTrace::class) && ($app->isConsole() || $this->displayErrorDetails)) {
+        if (app()->has('slashtrace') && ($app->isConsole() || $this->displayErrorDetails)) {
+            app()->resolve('slashtrace')->register();
+            http_response_code(500);
             throw $exception;
         }
 
