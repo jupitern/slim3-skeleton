@@ -8,7 +8,7 @@ $app->get('/{command}/{method}', function (Request $request, Response $response,
 
 	$params = [];
 	for ($i=2; $i<count($argv); ++$i) {
-		$parts = explode("=", $argv[$i]);
+        $parts = explode("=", $argv[$i], 2);
 		$params[$parts[0]] = $parts[1];
 	}
 

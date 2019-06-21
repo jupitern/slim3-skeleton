@@ -5,7 +5,6 @@ namespace App\Handlers;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Log\LoggerInterface;
-use League\Plates\Engine;
 
 final class NotFound extends \Slim\Handlers\NotFound
 {
@@ -28,8 +27,11 @@ final class NotFound extends \Slim\Handlers\NotFound
 		    return app()->error("URI '".$request->getUri()->getPath()."' not found", 404);
         }
 
-		$resp = $app->resolve(Engine::class)->render('error::404');
-		$response->withStatus(404)->write($resp);
+		$resp = $app->resolve('view')->render('http::error', [
+		    'code' => 404,
+            'message' => "uri {$request->getUri()->getPath()} not found",
+        ]);
+        $response = $response->withStatus(404)->write($resp);
 
 		return $response;
 	}

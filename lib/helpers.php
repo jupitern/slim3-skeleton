@@ -3,7 +3,6 @@
  * get app instance
  * @param string $appName
  * @param array $settings
- * @param boolean $console
  *
  * @return \Lib\Framework\App
  */
@@ -48,7 +47,7 @@ function baseUrl($showIndex = null)
 function debug($var, $exit = false, $return = false, $separator = null)
 {
 	$log = "";
-	if ($separator == null) $separator = app()->console ? "\n" : "<br/>";
+	if ($separator == null) $separator = app()->isConsole() ? "\n" : "<br/>";
 
 	if ($separator == "<br/>") $log .= '<pre>';
 	if (is_array($var)) {
@@ -85,7 +84,7 @@ function dbLog($exit = false, $return = false, $separator = null)
 	$log = "";
 	$queryLog = $app->resolve(\Illuminate\Database\ConnectionInterface::class)->getQueryLog();
 
-	if ($separator == null) $separator = $app->console ? "\n" : "<br/>";
+	if ($separator == null) $separator = $app->isConsole() ? "\n" : "<br/>";
 
 	if (!empty($queryLog)) {
 		$log = "QUERY LOG (".count($queryLog)." queries):{$separator}{$separator}";
@@ -127,7 +126,7 @@ function dbLastQuery($exit = false, $return = false, $separator = null)
 	$log = "";
 	$queryLog = $app->resolve(\Illuminate\Database\ConnectionInterface::class)->getQueryLog();
 
-	if ($separator == null) $separator = $app->console ? "\n" : "<br/>";
+	if ($separator == null) $separator = $app->isConsole() ? "\n" : "<br/>";
 
 	for ($i = count($queryLog)-1; $i >= 0; $i--) {
 		$ql = $queryLog[$i];
