@@ -20,3 +20,11 @@ $app->get('/hello/{name}', function(Request $request, Response $response, $args)
 $app->any('/{class}/{method}', function(Request $request, Response $response, $args) use($app) {
 	return $app->resolveRoute('\App\Http\Site', $args['class'], $args['method'], $args);
 });
+
+/*API ROUTE*/
+$app->any('/api/v1/{module}/{class}/{method}', function (Request $request, Response $response, $args) use ($app) {
+    $nameSpace = "\App\Http\Api\V1\\" . ucfirst($args['module']);
+    $method = $args['method'] . "Action";
+    $class = ucfirst($args['class']);
+    return $app->resolveRoute($nameSpace, $class, $method, $args);
+});

@@ -11,6 +11,7 @@ define('STORAGE_PATH', realpath(__DIR__.'/storage/').DS);
 define('RESOURCES_PATH', realpath(__DIR__.'/resources/').DS);
 define('PUBLIC_PATH', realpath(__DIR__.'/public/').DS);
 define('LIB_PATH', realpath(__DIR__.'/lib/').DS);
+define('DATA_PATH', realpath(__DIR__ . '/data/') . DS);
 
 require ROOT_PATH.'vendor'.DS.'autoload.php';
 

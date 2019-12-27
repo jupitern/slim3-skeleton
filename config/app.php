@@ -66,6 +66,10 @@ return [
 				'replyTo'	=> '',
 			]
 		],
+        'oauth2' => [
+            'private_key' => DATA_PATH . "keys" . DS . "oauth" . DS . "private.key",
+            'public_key' => DATA_PATH . "keys" . DS . "oauth" . DS . "public.key"
+        ],
 	],
 	// add your service providers here
 	'providers' => [
@@ -76,11 +80,13 @@ return [
 		App\ServiceProviders\Eloquent::class => 'http,console',
 		App\ServiceProviders\FileSystem::class => 'http,console',
 		App\ServiceProviders\Mailer::class => 'http,console',
-		App\ServiceProviders\Jobby::class,
+		App\ServiceProviders\Jobby::class => 'console',
+		App\ServiceProviders\OAuthServer::class => 'http,console',
 	],
 	// add your middleware here
 	'middleware' => [
 		App\Middleware\Session::class => 'http',
+		App\Middleware\OAuthAuthenticationToken::class => 'http',
 	],
 
 ];
