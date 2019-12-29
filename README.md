@@ -258,7 +258,7 @@ This command will create the tables and data needed for a first test with Oauth2
 Do not forget to take a look at the executed file `app/Console/Migrations.php`;
 
 For everything to work correctly, we need to create some keys, these ensure the integrity of the service.
-You can create using the following [link](https://www.ssh.com/ssh/keygen)  
+You can create using the following [link](https://oauth2.thephpleague.com/installation/)  
 Copy files to `data/keys/oauth` folder
 The settings for these files are in the `config/app.php`
 
