@@ -1,4 +1,4 @@
-# Slim Framework 3 Skeleton Application (http + cli)
+# Slim Framework 3 Skeleton Application (http + cli + oauth2)
 
 Use this skeleton application to quickly setup and start working on a new Slim Framework 3 application (Tested with slim 3.12).
 This application handles http and command line requests.
@@ -18,6 +18,7 @@ Available service providers:
 * [PHPMailer](https://github.com/PHPMailer/PHPMailer)
 * [Redis Cache](https://github.com/naroga/redis-cache)
 * [Jobby](https://github.com/jobbyphp/jobby)
+* [Oauth2](https://github.com/thephpleague/oauth2-server)
 
 Available middleware:
 
@@ -244,11 +245,57 @@ After Jobby installs, you can copy an example file to the project root.
 $ cp vendor/hellogerard/jobby/resources/jobby.php .
 ```
 
+### Oauth2 usage
 
+First create a database, and include the configuration data in the `config/development.php or config/production.php` file
+We now need to create the tables that will be used to manage oAuth2, To do this run the following command in the root folder of the project.
+
+```
+php cli.php Migrations migrate
+```
+
+This command will create the tables and data needed for a first test with Oauth2.
+Do not forget to take a look at the executed file `app/Console/Migrations.php`;
+
+For everything to work correctly, we need to create some keys, these ensure the integrity of the service.
+You can create using the following [link](https://oauth2.thephpleague.com/installation/)  
+Copy files to `data/keys/oauth` folder
+The settings for these files are in the `config/app.php`
+
+To test your application use [postman](https://www.getpostman.com/).
+Create a new request for the following route. `http://localhost/api/v1/authentication/authentication/login`
+Navigate to the Authorization tab, select type oAuth2, click Get New Access Token and fill in the fields as follows
+
+```
+Grant type: Password Credentials 
+Access token URL: http://localhost/api/v1/authentication/authentication/token
+User name: admin
+Password: admin
+Client ID: QWRtaW5pc3RyYXRpb24=
+Cliente Secret: Administration
+```
+
+Click on request token, then use token, after that submit the request
+The answer will be something close to that.
+
+```json
+{
+    "result": "success",
+    "message": "Login Successful",
+    "redirect_url": ""
+}
+```
+
+Remember to create your token validation business rule
+```
+Middleware/OAuthAuthenticationToken.php
+```
 ## Changelog
 
+ 
 v2.6
  - Replaced Whoops and Collision packages by slashtrace that provides http and cli debug
+ - Oauth2, Repository, Business
 
 V2.5
  - Allow for providers and middleware to be registered only for a given scope (dependent on app name)
