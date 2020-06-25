@@ -30,5 +30,9 @@
   	"respect/validation": "1.1.*",
     "jupitern/table": "1.*",
     "slim/twig-view": "2.4.*"
-  }
+  },
+   "scripts": {
+        "serve": "php -S localhost:8080 -t public"
+    }
+  
 }
