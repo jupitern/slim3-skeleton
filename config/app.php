@@ -1,86 +1,86 @@
 <?php
-return [
-	'settings' => [
-		'env' => \Lib\Framework\App::DEVELOPMENT,
-		'addContentLengthHeader' => false,
-		// default timezone & locale
-		'timezone' => 'Europe/Lisbon',
-        'locale' => 'pt_PT',
-		// Only set this if you need access to route within middleware
-		'determineRouteBeforeAppMiddleware' => false,
-		// log file path
-        'log' => [
-            // log file path
-            'file' => STORAGE_PATH."logs".DS."app_".date('Ymd').".log",
-        ],
-		// template folders
-		'templates' => [
-			'error' => RESOURCES_PATH."views".DS."http".DS."error",
-			'console' => RESOURCES_PATH."views".DS."console",
-			'site' 	=> RESOURCES_PATH."views".DS."http".DS."site",
-			'mail' 	=> RESOURCES_PATH."views".DS."mail",
-		],
-        // setting for twig extension
-        'twig' => [
-            'cache' => STORAGE_PATH . 'twig',
-            'debug' => true,
-            'auto_reload' => true,
-        ],
-		'session' => [
-			'name' => 'app',
-			'lifetime' => 7200,
-			'path' => '/',
-			'domain' => null,
-			'secure' => false,
-			'httponly' => true,
-			'cache_limiter' => 'nocache',
-			'filesPath' => STORAGE_PATH.'sessions',
-		],
-		// storage settings
-		'filesystem' => [
-			'local' => [
-				'driver' 	=> 'local',
-				'root'   	=> STORAGE_PATH,
-			],
-			'ftp' => [
-				'driver'	=> 'ftp',
-				'host' 		=> '',
-				'username' 	=> '',
-				'password' 	=> '',
-				'port' 		=> 21,
-				'root' 		=> '/',
-				'passive' 	=> true,
-				'ssl' 		=> false,
-				'timeout' 	=> 30,
-			],
-		],
-		'mail' => [
-			'default' => [
-				'host'    	=> '',
-				'port'      => 25,
-				'secure'	=> '',
-				'username'  => '',
-				'password'  => '',
-				'from'		=> '',
-				'fromName'	=> '',
-				'replyTo'	=> '',
-			]
-		],
-	],
-	// add your service providers here
-	'providers' => [
-        App\ServiceProviders\Monolog::class => 'http,console',
-        App\ServiceProviders\SlashTrace::class => 'http,console',
-		App\ServiceProviders\Plates::class => 'http',
-		//App\ServiceProviders\Twig::class => 'http',
-		App\ServiceProviders\Eloquent::class => 'http,console',
-		App\ServiceProviders\FileSystem::class => 'http,console',
-		App\ServiceProviders\Mailer::class => 'http,console',
-		App\ServiceProviders\Jobby::class,
-	],
-	// add your middleware here
-	'middleware' => [
-		App\Middleware\Session::class => 'http',
-	],
 
+use Jupitern\Slim3\App;
+use Psr\Log\LogLevel;
+
+return [
+    'env' => App::DEVELOPMENT,
+    // default timezone & locale
+    'locale' => 'pt_PT',
+    'timezone' => 'UTC',
+    'slim' => [
+        'settings' => [
+            'addContentLengthHeader' => false,
+            'determineRouteBeforeAppMiddleware' => true,
+        ]
+    ],
+    'session' => [
+        'name' => 'app',
+        'lifetime' => 7200,
+        'path' => '/',
+        'domain' => null,
+        'secure' => false,
+        'httponly' => true,
+        'cache_limiter' => 'nocache',
+        'filesPath' => STORAGE_PATH.'sessions',
+    ],
+    'services' => [
+        'slashtrace' => [
+            'provider' => \Jupitern\Slim3\ServiceProviders\SlashTrace::class,
+        ],
+        'logger' => [
+            'provider' => \Jupitern\Slim3\ServiceProviders\Monolog::class,
+            'settings' => [
+                [
+                    'type'      => 'file',
+                    'enabled'   => true,
+                    'level'     => LogLevel::DEBUG,
+                    'path'      => STORAGE_PATH . 'logs' . DS . date('Ymd') . ".log",
+                ],
+            ]
+        ],
+        'view' => [
+            'provider' => \Jupitern\Slim3\ServiceProviders\Plates::class,
+            'settings' => [
+                'templates' => [
+                    'http'    => VIEWS_PATH . DS . "http",
+                    'console' => VIEWS_PATH . DS . "console",
+                    'mail'    => VIEWS_PATH . DS . "mail",
+                ],
+            ],
+        ],
+        'fs_local' => [
+            'provider' => \Jupitern\Slim3\ServiceProviders\FileSystem::class,
+            'settings' => [
+                'driver' => 'local',
+                'root'   => ROOT_PATH,
+            ]
+        ],
+        /*
+        'mail' => [
+            'provider' => \Jupitern\Slim3\ServiceProviders\Mailer::class,
+            'on' => 'console',
+            'settings' => [
+                'host'     => '',
+                'port'     => 25,
+                'secure'   => '',
+                'username' => '',
+                'password' => '',
+                'from'     => '',
+                'fromName' => '',
+                'replyTo'  => '',
+            ]
+        ],
+        */
+    ],
+    'middleware' => [
+        // middlewareClass => scenario
+        \Jupitern\Slim3\Middleware\Session::class => "http", // "http,console" to run on both scenarios
+//        \Jupitern\Slim3\Middleware\ValidateJson::class => "http",
+    ],
+    // app specific settings
+    'app' => [
+
+    ],
 ];
+

@@ -2,7 +2,7 @@
 
 Use this skeleton application to quickly setup and start working on a new Slim Framework 3 application (Tested with slim 3.12).
 This application handles http and command line requests.
-This application ships with a few service providers and a Session middleware out of the box.
+This application ships with a few service providers and a session middleware out of the box.
 Supports container resolution and auto-wiring.
 
 To remove a service provider comment it on config/app.php file and remove it from composer.json, update composer.
@@ -16,8 +16,7 @@ Available service providers:
 * [Twig](https://github.com/twigphp/Twig)
 * [Flysystem](https://github.com/thephpleague/flysystem)
 * [PHPMailer](https://github.com/PHPMailer/PHPMailer)
-* [Redis Cache](https://github.com/naroga/redis-cache)
-* [Jobby](https://github.com/jobbyphp/jobby)
+* [Redis Cache](https://github.com/predis/predis)
 
 Available middleware:
 
@@ -56,7 +55,7 @@ Replace `[my-app-name]` with the desired directory name for your new application
 
 The app class has a route resolver method that:
 * matches and injects params into the controller action passed as uri arguments
-* looks up and injects dependencies from the container by matching controller constructor / method argument names
+* looks up and injects dependencies from the container by matching controller constructor / method argument class names
 * automatic Resolution using controller constructor / method argument types
 * accepts string or Response object as controller action response
 
@@ -68,7 +67,7 @@ use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
 // simple route example
-$app->get('/hello/{name}', function (Request $request, Response $response, $args) {
+$app->get('/welcome/{name}', function (Request $request, Response $response, $args) {
 	$name = $request->getAttribute('name');
 	$response->getBody()->write("Hello, $name");
 
@@ -78,57 +77,26 @@ $app->get('/hello/{name}', function (Request $request, Response $response, $args
 
 // example route to resolve request to uri '/' to \App\Http\Site\Welcome::index
 $app->any('/', function ($request, $response, $args) use($app) {
-	return $app->resolveRoute('\App\Http\Site', "Welcome", "index", $args);
+	return $app->resolveRoute([\App\Http\Welcome::class, "index"], $args);
 });
 
 
-// example using container resolution and automatic resolution (auto-wiring)
-// resolves to a class:method under the namespace \App\Http\Site
-// injects the :id param value into the method $id parameter
-
-// route definition
-$app->any('/{class}/{method}[/{id:[0-9]+}]', function ($request, $response, $args) use($app) {
-	return $app->resolveRoute('\App\Http\Site', $args['class'], $args['method'], $args);
+// example calling http://localhost:8080/index.php/test/nuno with the route bellow
+// injects the :name param value into the method $name parameter
+// Other parameters in the method will be searched in the container by classname or automatically resolved
+// in this example the resolveRoute method will create a user instance and inject it in the controller method
+$app->any('/test[/{name}]', function ($request, $response, $args) use($app) {
+	return $app->resolveRoute([\App\Http\Welcome::class, "method"], $args);
 });
 
-// Controller Welcome definition
-namespace App\Http\Site;
-use \App\Http\Controller;
+namespace App\Http;
+use Jupitern\Slim3\App\Http\Controller;
 
 class Welcome extends Controller
 {
-	public function index($id, \Psr\Log\LoggerInterface $logger, \App\Model\User $user)
+	public function method($name, \App\Model\User $user)
 	{
-	    $logger->info("logging a message using logger resolved from container");
-
-	    $logger->info("getting a eloquent user model attributes using automatic resolution (auto-wiring)");
-	    debug($user->getAttributes()); // helper method debug
-
-        // return response as string. resolveRoute method will handle it and output the response
-	    return "id = {$id}";
-	}
-}
-
-
-// example calling http://localhost:8080/index.php/app/test/method/1 with the route bellow
-// resolves to a class:method under the namespace \App\Http\App and
-// injects the :id param value into the method $id parameter
-// Other parameters in the method will be searched in the container or automatically resolved
-
-// route definition
-$app->any('/app/{class}/{method}[/{id:[0-9]+}]', function ($request, $response, $args) use($app) {
-	return $app->resolveRoute('\App\Http\App', $args['class'], $args['method'], $args);
-});
-
-namespace App\Http\App;
-use \App\Http\Controller;
-
-// Controller Test definition
-class Test extends Controller
-{
-	public function method($id, \App\Model\User $user)
-	{
-	    return get_class($user)."<br/>id = {$id}";
+	    return get_class($user)."<br/>name = {$name}";
 	}
 }
 
@@ -183,7 +151,7 @@ $app = \Lib\Framework\App::instance();
 $app = app();
 ```
 
-Debug a variable, array or object using a debug helper
+Debug a variable, array or object using the debug helper function
 ```php
 debug(['a', 'b', 'c']);
 // or debug and exit passing true as second param
@@ -197,10 +165,10 @@ $user = \App\Model\User::find(1);
 echo $user->Name;
 ```
 
-Send a email using PHPMailer service provider and default settings
+Send a email using PHPMailer service provider service named 'mail' on config file
 ```php
 /* @var $mail \PHPMailer\PHPMailer\PHPMailer */
-$mail = app()->resolve(\PHPMailer\PHPMailer\PHPMailer::class);
+$mail = app()->resolve('mail');
 $mail->addAddress('john.doe@domain.com');
 $mail->Subject = "test";
 $mail->Body    = "<b>test body</b>";
@@ -208,44 +176,38 @@ $mail->AltBody = "alt body";
 $mail->send();
 ```
 
-List a directory content with Flysystem service provider and default settings 'local'
+List a directory content with Flysystem service provider named 'fs_local' on config file
 ```php
-$filesystem = app()->resolve(\League\Flysystem\FilesystemInterface::class, ['local']);
-$contents = $filesystem->listContents('', true);
+$filesystem = app()->resolve('fs_local');
+$contents = $filesystem->listContents(STORAGE_PATH, true);
 var_dump($contents);
 ```
 
 Write and read from session using Session Helper class
 ```php
 // save user info in session
-\Lib\Utils\Session::set('user', ['id' => '1']);
+\Jupitern\Slim3\Utils\Session::set('user', ['id' => '1']);
 // get user info from session
-$user = \Lib\Utils\Session::get('user');
-var_dump($user);
+$uservar = \Jupitern\Slim3\Utils\Session::get('user');
+var_dump($uservar);
 ```
 
-Write and read from cache (using default driver redis)
+Write and read from cache with Redis service provider named 'redis' on config file
 ```php
-/** @var \Naroga\RedisCache\Redis $cache */
-$cache = app()->resolve(\Psr\SimpleCache\CacheInterface::class);
+/** @var \Jupitern\Slim3\Utils\Redis $cache */
+$cache = app()->resolve('redis');
 $cache->set("cacheKey", "some test value");
 echo $cache->get("cacheKey");
 ```
 
-### Jobby usage
-
-Then add the following line to your (or whomever's) crontab:
-```
-* * * * * cd /path/to/project && php cli.php Jobby init 1>> /dev/null 2>&1
-```
-
-After Jobby installs, you can copy an example file to the project root.
-```
-$ cp vendor/hellogerard/jobby/resources/jobby.php .
-```
-
-
 ## Changelog
+
+v3.0
+ - moved core code to another package.
+ - route resolution using reflection can now be switched off for performance.
+ - config file services changed structure.
+ - register services in container using a string instead of classnames.
+ - code refactor and improvements.
 
 v2.6
  - Replaced Whoops and Collision packages by slashtrace that provides http and cli debug

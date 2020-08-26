@@ -15,13 +15,9 @@
 		</style>
 	</head>
 	<body>
-		<table id="wrapper">
-			<tr>
-				<td>
-					<h1>Error 500!</h1>
-					<?= isset($message) ? $message : "" ?>
-				</td>
-			</tr>
-		</table>
+		
+		<br/><br/>
+		<center><h1 style="font-family: sans-serif;">Welcome <?= $name ? $name : 'to slim skelleton!' ?></h1><center>
+		
 	</body>
 </html>

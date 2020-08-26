@@ -1,58 +1,43 @@
 <?php
 
-use \Psr\Http\Message\ServerRequestInterface as Request;
-use \Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Http\Message\ResponseInterface as Response;
+use Jupitern\Slim3\App\Console\HelpCommand;
 
 // automatic console command resolver
-$app->get('/{command}/{method}', function (Request $request, Response $response, $args) use ($app, $argv) {
+$app->get('/command', function (Request $request, Response $response, $args) use ($app, $cliCommandParts) {
 
-	$params = [];
-	for ($i=2; $i<count($argv); ++$i) {
-        $parts = explode("=", $argv[$i], 2);
-		$params[$parts[0]] = $parts[1];
-	}
+    $response->withHeader('Content-Type', 'text/plain');
 
-	$response->withHeader('Content-Type', 'text/plain');
+    if (empty($cliCommandParts)) {
+        return $app->resolveRoute([HelpCommand::class, "show"], []);
+    }
 
-	return $app->resolveRoute("\\App\\Console", $argv[0], $argv[1], $params);
-});
+    for ($paramsStartPos=0; $paramsStartPos<count($cliCommandParts); $paramsStartPos++) {
+        if (strpos($cliCommandParts[$paramsStartPos], '=') !== false) break;
+    }
 
-// help route to display available command in
-$app->get('/help', function (Request $request, Response $response, $args) {
-	$response->withHeader('Content-Type', 'text/plain');
+    $commandParts = array_slice($cliCommandParts, 0, $paramsStartPos);
+    $paramsParts = array_slice($cliCommandParts, $paramsStartPos, count($cliCommandParts)-1);
 
-	$response->write("\n** Slim command line **\n\n");
-	$response->write("usage: php ".ROOT_PATH."cli.php <command-name> <method-name> [parameters...]\n\n");
-	$response->write("The following commands are available:\n");
+    if (count($cliCommandParts) == 1) {
+        return $app->resolveRoute([HelpCommand::class, 'show'], ['command' => $cliCommandParts[0]]);
+    }
+    elseif (count($commandParts) < 2) {
+        return app()->notFound();
+    }
 
-	$iterator = new DirectoryIterator(APP_PATH.'Console');
-	foreach ($iterator as $fileinfo) {
-		if ($fileinfo->isFile()) {
-			$className = str_replace(".php", "", $fileinfo->getFilename());
-			$class = new \ReflectionClass("\\App\\Console\\$className");
+    $method = array_pop($commandParts);
+    $class = array_pop($commandParts);
+    $namespace = "\\App\\Console". (count($commandParts) > 0 ? "\\".implode('\\', $commandParts) : "");
 
-			if (!$class->isAbstract()) {
-				$response->write("- ".strtolower($className)."\n");
+    $params = [];
+    for ($i=0; $i<count($paramsParts); ++$i) {
+        $parts = explode("=", $paramsParts[$i], 2);
+        if (count($parts) != 2) return app()->notFound();
 
-				foreach ($class->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
-					if (strpos($method->getName(), '__') === 0) {
-						continue;
-					}
-					$response->write("       ".strtolower($method->getName())." ");
-					foreach ($method->getParameters() as $parameter) {
-						if ($parameter->isDefaultValueAvailable()) {
-							$response->write("[".$parameter->getName()."=value] ");
-						}
-						else {
-							$response->write($parameter->getName()."=value ");
-						}
-					}
-					$response->write("\n");
-				}
-				$response->write("\n");
-			}
-		}
-	}
+        $params[$parts[0]] = $parts[1];
+    }
 
-	return $response;
+    return $app->resolveRoute([$namespace.'\\'.$class, $method], $params);
 });

@@ -1,14 +1,13 @@
 <?php
 
 namespace App\Console;
+use Jupitern\Slim3\App\Console\Command as BaseCommand;
 
-class Test extends Command
+class Test extends BaseCommand
 {
 
 	public function method($a, $b='foobar')
 	{
-		$this->logger->info("logging a message");
-
 		return
 			"\nEntered console command with params: \n".
 			"a= {$a}\n".
