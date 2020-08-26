@@ -3,7 +3,7 @@
 Use this skeleton application to quickly setup and start working on a new Slim Framework 3 application (Tested with slim 3.12).
 This application handles http and command line requests.
 This application ships with a few service providers and a session middleware out of the box.
-Supports container resolution and auto-wiring.
+Support for container resolution and auto-wiring.
 
 To remove a service provider comment it on config/app.php file and remove it from composer.json, update composer.
 
@@ -46,9 +46,9 @@ Replace `[my-app-name]` with the desired directory name for your new application
 * `app`:        Application code (models, controllers, cli commands, handlers, middleware, service providers and others)
 * `config`:     Configuration files like db, mail, routes...
 * `lib`:        Other project classes like utils, business logic and framework extensions
-* `resources`:  Views as well as your raw, un-compiled assets such as LESS, SASS, or JavaScript.
-* `storage`:    Log files, cache files...
+* `storage`:    Log files, cache files and your raw, un-compiled assets such as LESS, SASS, or JavaScript.
 * `public`:     The public directory contains `index.php` file, assets such as images, JavaScript, and CSS
+* `views`:      Views template files.
 * `vendor`:     Composer dependencies
 
 ### Routing and dependency injection
