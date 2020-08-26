@@ -16,7 +16,7 @@ Available service providers:
 * [Twig](https://github.com/twigphp/Twig)
 * [Flysystem](https://github.com/thephpleague/flysystem)
 * [PHPMailer](https://github.com/PHPMailer/PHPMailer)
-* [Redis Cache](https://github.com/predis/predis)
+* [Redis](https://github.com/predis/predis)
 
 Available middleware:
 
@@ -37,7 +37,7 @@ Replace `[my-app-name]` with the desired directory name for your new application
 ### Run it:
 
 1. `$ cd [my-app-name]\public`
-2. `$ php -S localhost:8080`
+2. `$ php -S localhost:8080` OR `$ composer serve`
 3. Browse to http://localhost:8080
 
 

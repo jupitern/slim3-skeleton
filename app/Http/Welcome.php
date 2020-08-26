@@ -6,7 +6,7 @@ use Jupitern\Slim3\App\Http\Controller;
 class Welcome extends Controller
 {
 
-    public function index($name = '', $logger)
+    public function index($name = '')
     {
         return app()->view->render('http::welcome', ['name' => $name]);
     }
