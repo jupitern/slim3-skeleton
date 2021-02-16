@@ -17,5 +17,4 @@ nbproject/
 
 # the composer package lock file and install directory
 /vendor
-composer.lock
 /node_modules/
