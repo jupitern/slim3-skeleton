@@ -10,7 +10,7 @@
     "jupitern/slim3-core": "1.2.*",
     "league/flysystem": "2.0.*",
     "league/plates": "3.4.*",
-    "illuminate/database": "8.27.*",
+    "illuminate/database": "8.40.*",
     "phpmailer/phpmailer": "6.2.*"
   },
   "require-dev": {
