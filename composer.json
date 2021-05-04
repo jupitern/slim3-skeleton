@@ -11,7 +11,7 @@
     "league/flysystem": "2.0.*",
     "league/plates": "3.4.*",
     "illuminate/database": "8.27.*",
-    "phpmailer/phpmailer": "6.2.*"
+    "phpmailer/phpmailer": "6.4.*"
   },
   "require-dev": {
   },
