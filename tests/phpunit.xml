@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit bootstrap="bootstrap.php" executionOrder="depends,defects" forceCoversAnnotation="true" beStrictAboutCoversAnnotation="true" beStrictAboutOutputDuringTests="true" beStrictAboutTodoAnnotatedTests="true" failOnRisky="true" failOnWarning="true" defaultTestSuite="default" verbose="true" cacheResult="false" cacheResultFile="./.phpunitResultCache" testdox="true">
+    <testsuites>
+        <testsuite name="default">
+            <file>Http/HttpTest.php</file>
+          </testsuite>
+    </testsuites>
+    <coverage processUncoveredFiles="true">
+        <include>
+            <directory suffix=".php">./</directory>
+        </include>
+    </coverage>
+</phpunit>
