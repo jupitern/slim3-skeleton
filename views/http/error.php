@@ -15,20 +15,26 @@
     </style>
 </head>
 <body>
-<table id="wrapper">
-    <tr>
-        <td>
-            <h1>Error <?= isset($error['code']) ? $error['code'] : 500 ?>!</h1>
-            <?php
-            if (isset($error['error']) && is_string($error['error'])) {
-                echo $error['error'];
-            }
-            elseif (isset($error['error']) && is_array($error['error'])) {
-                foreach ($error['error'] as $msg) echo $msg."<br/>";
-            }
-            ?>
-        </td>
-    </tr>
-</table>
+    
+    <table id="wrapper">
+        <tr>
+            <td>
+                <h1>Error <?= isset($code) ? $code : 500 ?>!</h1>
+                <?php
+                if (isset($error) && is_string($error)) {
+                    echo $error;
+                }
+                elseif (isset($error) && is_array($error)) {
+                    foreach ($error as $msg) echo $msg."<br/>";
+                }
+
+                if (isset($messages) && is_array($messages)) {
+                    foreach ($messages as $msg) echo $msg."<br/>";
+                }
+                ?>
+            </td>
+        </tr>
+    </table>
+    
 </body>
 </html>
