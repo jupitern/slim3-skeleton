@@ -17,13 +17,13 @@ function app($appName = null, $configs = [])
 /**
  * log a message
  *
- * @param int       $level
+ * @param mixed     $level
  * @param mixed     $message
  * @param array     $context
  *
  * @throws ReflectionException
  */
-function addLog(int $level, $message, array $context = [])
+function addLog($level, $message, array $context = [])
 {
     if (!app()->has('logger')) return;
 
